@@ -12,3 +12,8 @@ bool operator== (const Point& p1, const Point& p2) {
 bool operator!= (const Point& p1, const Point& p2) {
     return !operator==(p1, p2);
 }
+
+ostream& operator<< (ostream& out, const Point& p) {
+    out << "( " << p.x << ", " << p.y << " )";
+    return out;
+}
