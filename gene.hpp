@@ -9,11 +9,13 @@ using std::pair;
 
 class Gene {
 public:
-    Gene(size_t);
-    size_t len;
+    Gene() = default;
+    size_t len = 0;
     vector<size_t> gene;
     double value = 0;
+    void init(size_t);
     void update_value(const vector<Point>&, const vector<pair<Polygon, int>>&, const Point&, const Point&);
+    friend pair<Gene, Gene> cross(Gene&, Gene&);
 };
 
 #endif

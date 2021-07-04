@@ -4,7 +4,7 @@
 using std::random_device;
 using std::generate;
 
-Gene::Gene(size_t point_number) {
+void Gene::init(size_t point_number) {
     random_device r;
     len = r() % point_number;
     gene = vector<size_t>(len);
@@ -32,4 +32,16 @@ void Gene::update_value(const vector<Point>& pts,
         path_length += cross_value;
     }
     value = path_length;
+}
+
+pair<Gene, Gene> cross(Gene& parent1, Gene& parent2) {
+    random_device r;
+    size_t parent1_cross = parent1.len > 1 ? r() % (parent1.len - 1) + 1 : 0;
+    size_t parent2_cross = parent2.len > 1 ? r() % (parent2.len - 1) + 1 : 0;
+    Gene child1, child2;
+    child1.gene = { parent1.gene.begin(), parent1.gene.begin() + parent1_cross };
+    child2.gene = { parent2.gene.begin(), parent2.gene.begin() + parent2_cross };
+    child1.gene.insert(child1.gene.end(), parent2.gene.begin() + parent2_cross, parent2.gene.end());
+    child2.gene.insert(child2.gene.end(), parent1.gene.begin() + parent1_cross, parent1.gene.end());
+    return { child1, child2 };
 }
