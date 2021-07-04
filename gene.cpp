@@ -1,14 +1,23 @@
 #include "gene.hpp"
 #include <random>
 #include <algorithm>
+#include <unordered_set>
 using std::random_device;
 using std::generate;
+using std::unordered_set;
 
 void Gene::init(size_t point_number) {
     random_device r;
     len = r() % point_number;
     gene = vector<size_t>(len);
     generate(gene.begin(), gene.end(), [&] {return r() % point_number; });
+    remove_duplicates();
+}
+
+void Gene::remove_duplicates() {
+    unordered_set<size_t> s(gene.begin(), gene.end());
+    gene.assign(s.begin(), s.end());
+    len = gene.size();
 }
 
 void Gene::update_value(const vector<Point>& pts,
@@ -34,7 +43,7 @@ void Gene::update_value(const vector<Point>& pts,
     value = path_length;
 }
 
-pair<Gene, Gene> cross(Gene& parent1, Gene& parent2) {
+pair<Gene, Gene> one_point_cross(const Gene& parent1, const Gene& parent2) {
     random_device r;
     size_t parent1_cross = parent1.len > 1 ? r() % (parent1.len - 1) + 1 : 0;
     size_t parent2_cross = parent2.len > 1 ? r() % (parent2.len - 1) + 1 : 0;
@@ -43,5 +52,7 @@ pair<Gene, Gene> cross(Gene& parent1, Gene& parent2) {
     child2.gene = { parent2.gene.begin(), parent2.gene.begin() + parent2_cross };
     child1.gene.insert(child1.gene.end(), parent2.gene.begin() + parent2_cross, parent2.gene.end());
     child2.gene.insert(child2.gene.end(), parent1.gene.begin() + parent1_cross, parent1.gene.end());
+    child1.remove_duplicates();
+    child2.remove_duplicates();
     return { child1, child2 };
 }

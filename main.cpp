@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <unordered_set>
 #include "polygon.hpp"
 #include "point.hpp"
 #include "pathfinder.hpp"
@@ -15,10 +17,11 @@ int main()
         Pathfinder pa(obstacles, start, end);
         size_t population_size = 50;
         size_t epoch_number = 300;
+        size_t valueless_epoch_number = 15;
         double cross_percent = 0.5;
 
+        const auto& path = pa.find_path(population_size, epoch_number, valueless_epoch_number, cross_percent, true);
         cout << "Path found: " << start << " -> ";
-        const auto& path = pa.find_path(population_size, epoch_number, cross_percent);
         for (const auto& point : path) {
             cout << point << " -> ";
         }
