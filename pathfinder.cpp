@@ -1,11 +1,13 @@
 #include "pathfinder.hpp"
 #include <iostream>
 #include <algorithm>
+#include <stdexcept>
 #include <random>
 using std::random_device;
 using std::sort;
 using std::cout;
 using std::endl;
+using std::invalid_argument;
 
 Pathfinder::Pathfinder(const vector<pair<Polygon, int>>& set_obstacles, const Point& set_start,
         const Point& set_end) : obstacles(set_obstacles), start(set_start), end(set_end) {
@@ -74,6 +76,30 @@ void Pathfinder::select_population(vector<Gene>& population,
 vector<Point> Pathfinder::find_path(size_t population_size, size_t epoch_number,
         size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst,
         double cross_percent, double mutate_percent, bool report) const {
+    if (population_size <= 0) {
+        throw invalid_argument("Wrong population size");
+    }
+    if (epoch_number <= 0) {
+        throw invalid_argument("Wrong epoch number");
+    }
+    if (valueless_epoch_number < 0) {
+        throw invalid_argument("Wrong valueless epoch number");
+    }
+    if (preserve_best < 0 || preserve_best > population_size) {
+        throw invalid_argument("Wrong preserve_best number");
+    }
+    if (preserve_worst < 0 || preserve_worst > population_size) {
+        throw invalid_argument("Wrong preserve_worst number");
+    }
+    if (preserve_best + preserve_worst > population_size) {
+        throw invalid_argument("Wrong preserve_best & preserve_worst ratio");
+    }
+    if (cross_percent < 0) {
+        throw invalid_argument("Wrong cross percent");
+    }
+    if (mutate_percent <= 0) {
+        throw invalid_argument("Wrong mutate percent");
+    }
     vector<Gene> population(population_size);
     double last_value = 0;
     size_t valueless_epochs = 0;
