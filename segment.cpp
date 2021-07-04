@@ -4,22 +4,22 @@
 
 Segment::Segment(const Point& set_a, const Point& set_b) : a(set_a), b(set_b) {}
 
-template <> bool Segment::crosses(const Segment& s, bool count_touch) {
+template <> bool Segment::crosses(const Segment& segment, bool count_touch) {
     return count_touch ?
-        cross_prod(Vector(s.a, s.b), Vector(s.b, b)) * cross_prod(Vector(s.a, s.b), Vector(s.b, a)) <= 0 &&
-        cross_prod(Vector(a, b), Vector(b, s.b)) * cross_prod(Vector(a, b), Vector(b, s.a)) <= 0 :
-        cross_prod(Vector(s.a, s.b), Vector(s.b, b)) * cross_prod(Vector(s.a, s.b), Vector(s.b, a)) < 0 &&
-        cross_prod(Vector(a, b), Vector(b, s.b)) * cross_prod(Vector(a, b), Vector(b, s.a)) < 0;
+        cross_prod(Vector(segment.a, segment.b), Vector(segment.b, b)) * cross_prod(Vector(segment.a, segment.b), Vector(segment.b, a)) <= 0 &&
+        cross_prod(Vector(a, b), Vector(b, segment.b)) * cross_prod(Vector(a, b), Vector(b, segment.a)) <= 0 :
+        cross_prod(Vector(segment.a, segment.b), Vector(segment.b, b)) * cross_prod(Vector(segment.a, segment.b), Vector(segment.b, a)) < 0 &&
+        cross_prod(Vector(a, b), Vector(b, segment.b)) * cross_prod(Vector(a, b), Vector(b, segment.a)) < 0;
 }
 
 double Segment::len() {
     return Vector(a, b).len();
 }
 
-template <> bool Segment::crosses(const Polygon& p, bool count_touch) {
+template <> bool Segment::crosses(const Polygon& polygon, bool count_touch) {
     if (count_touch) {
-        for (auto i = p.begin(); i != p.end(); ++i) {
-            if (crosses(*i, true)) {
+        for (const auto& segment : polygon) {
+            if (crosses(segment, true)) {
                 return true;
             }
         }
@@ -27,8 +27,8 @@ template <> bool Segment::crosses(const Polygon& p, bool count_touch) {
     }
 
     int crossed_num = 0;
-    for (auto i = p.begin(); i != p.end(); ++i) {
-        if (crosses(*i, true)) {
+    for (const auto& segment : polygon) {
+        if (crosses(segment, true)) {
             ++crossed_num;
         }
     }
@@ -40,15 +40,15 @@ template <> bool Segment::crosses(const Polygon& p, bool count_touch) {
     }
 
     // 2 or 3 intersections - possible touch or overlap
-    for (auto i = p.begin(); i != p.end(); ++i) {
-        if (crosses(*i, false)) {
+    for (const auto& segment : polygon) {
+        if (crosses(segment, false)) {
             return true;
         }
     }
     return false;
 }
 
-ostream& operator<< (ostream& out, const Segment& s) {
-    out << "[ " << s.a << ", " << s.b << " ]";
+ostream& operator<< (ostream& out, const Segment& segment) {
+    out << "[ " << segment.a << ", " << segment.b << " ]";
     return out;
 }

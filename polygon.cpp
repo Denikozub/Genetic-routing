@@ -46,12 +46,12 @@ bool Polygon::is_node(const Point& p) const {
     return find(pts.begin(), pts.end(), p) != pts.end();
 }
 
-ostream& operator<< (ostream& out, const Polygon& p) {
+ostream& operator<< (ostream& out, const Polygon& polygon) {
     out << "{ ";
-    if (p.pts.size() >= 1) {
-        out << p.pts[0];
+    if (polygon.pts.size() >= 1) {
+        out << polygon.pts[0];
     }
-    for (auto i = p.pts.begin() + 1; i != p.pts.end(); ++i) {
+    for (auto i = polygon.pts.begin() + 1; i != polygon.pts.end(); ++i) {
         out << ", " << *i;
     }
     out << " }";

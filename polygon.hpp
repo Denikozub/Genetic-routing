@@ -17,8 +17,8 @@ public:
 };
 
 class Polygon {
-    vector<Point> pts;
 public:
+    vector<Point> pts;
     Polygon(const vector<Point>&);
     Iterator begin() const;
     Iterator end() const;
