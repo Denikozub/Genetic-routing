@@ -23,7 +23,6 @@ public:
     const vector<Point>& geometry() const;
     Iterator begin() const;
     Iterator end() const;
-    bool is_node(const Point&) const;
     friend ostream& operator<< (ostream&, const Polygon&);
 };
 

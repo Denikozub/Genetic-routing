@@ -1,6 +1,4 @@
 #include <iostream>
-#include <algorithm>
-#include <unordered_set>
 #include "polygon.hpp"
 #include "point.hpp"
 #include "pathfinder.hpp"

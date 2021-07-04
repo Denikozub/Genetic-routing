@@ -1,5 +1,4 @@
 #include "vector.hpp"
-#include "point.hpp"
 #include <cmath>
 using std::sqrt;
 

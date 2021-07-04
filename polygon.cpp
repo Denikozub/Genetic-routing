@@ -1,9 +1,9 @@
 #include "polygon.hpp"
 #include <stdexcept>
-#include <algorithm>
 using std::out_of_range;
 using std::invalid_argument;
-using std::find;
+
+/*=========================================== Iterator ==========================================*/
 
 Iterator::Iterator(vector<Point>::const_iterator it,
     vector<Point>::const_iterator end) : pts_it(it), pts_end(end) {}
@@ -28,6 +28,8 @@ bool Iterator::operator!= (const Iterator& it) const {
     return !operator==(it);
 }
 
+/*=========================================== Polygon ===========================================*/
+
 Polygon::Polygon(const vector<Point>& set_pts) : pts(set_pts) {
     if (pts.size() < 4) {
         throw invalid_argument("Polygon consists minimum of 3 points");
@@ -47,10 +49,6 @@ Iterator Polygon::begin() const {
 
 Iterator Polygon::end() const {
     return Iterator(pts.cend() - 1, pts.cend() - 1);
-}
-
-bool Polygon::is_node(const Point& p) const {
-    return find(pts.begin(), pts.end(), p) != pts.end();
 }
 
 ostream& operator<< (ostream& out, const Polygon& polygon) {
