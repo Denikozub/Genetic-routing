@@ -10,6 +10,7 @@ using std::vector;
 class Pathfinder {
     vector<Polygon> obstacles;
     Point start, end;
+    int cross_mult;
     vector<Point> pts;
     friend class Gene;
 public:

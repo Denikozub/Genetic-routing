@@ -29,9 +29,16 @@ bool Iterator::operator!= (const Iterator& it) const {
 }
 
 Polygon::Polygon(const vector<Point>& set_pts) : pts(set_pts) {
-    if (*pts.begin() != *(pts.end() - 1)) {
+    if (pts.size() < 4) {
+        throw invalid_argument("Polygon consists minimum of 3 points");
+    }
+    if (*(pts.begin()) != *(pts.end() - 1)) {
         throw invalid_argument("First and last points of polygon must be equal");
     }
+}
+
+const vector<Point>& Polygon::geometry() const {
+    return pts;
 }
 
 Iterator Polygon::begin() const {

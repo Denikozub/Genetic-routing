@@ -17,9 +17,10 @@ public:
 };
 
 class Polygon {
-public:
     vector<Point> pts;
+public:
     Polygon(const vector<Point>&);
+    const vector<Point>& geometry() const;
     Iterator begin() const;
     Iterator end() const;
     bool is_node(const Point&) const;
