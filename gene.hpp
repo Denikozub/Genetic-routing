@@ -18,6 +18,7 @@ public:
     void init(size_t);
     void update_value(const vector<Point>&, const vector<pair<Polygon, int>>&, const Point&, const Point&);
     friend pair<Gene, Gene> one_point_cross(const Gene&, const Gene&);
+    friend Gene one_point_mutate(const Gene&, size_t);
 };
 
 #endif

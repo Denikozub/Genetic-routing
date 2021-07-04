@@ -1,10 +1,12 @@
 #include "gene.hpp"
 #include <random>
 #include <algorithm>
+#include <exception>
 #include <unordered_set>
 using std::random_device;
 using std::generate;
 using std::unordered_set;
+using std::invalid_argument;
 
 void Gene::init(size_t point_number) {
     random_device r;
@@ -44,6 +46,9 @@ void Gene::update_value(const vector<Point>& pts,
 }
 
 pair<Gene, Gene> one_point_cross(const Gene& parent1, const Gene& parent2) {
+    if (parent1.gene.size() <= 1 && parent2.gene.size() <= 1) {
+        throw invalid_argument("At least one of the parents should have 2 or more points");
+    }
     random_device r;
     size_t parent1_cross = parent1.len > 1 ? r() % (parent1.len - 1) + 1 : 0;
     size_t parent2_cross = parent2.len > 1 ? r() % (parent2.len - 1) + 1 : 0;
@@ -55,4 +60,17 @@ pair<Gene, Gene> one_point_cross(const Gene& parent1, const Gene& parent2) {
     child1.remove_duplicates();
     child2.remove_duplicates();
     return { child1, child2 };
+}
+
+Gene one_point_mutate(const Gene& src, size_t point_number) {
+    if (src.gene.size() == 0) {
+        throw invalid_argument("Gene cannot be empty");
+    }
+    random_device r;
+    size_t point_mutate = r() % src.len;
+    Gene mutant;
+    mutant.gene = src.gene;
+    mutant.gene[point_mutate] = r() % point_number;
+    mutant.remove_duplicates();
+    return mutant;
 }

@@ -52,28 +52,41 @@ void Pathfinder::cross_population(vector<Gene>& population, double cross_percent
     }
 }
 
-void Pathfinder::select_population(vector<Gene>& population, size_t population_size) const {
-    population = { population.begin(), population.begin() + population_size };
+void Pathfinder::mutate_population(vector<Gene>& population, double mutate_percent) const {
+    random_device r;
+    size_t population_size = population.size();
+    for (size_t i = 0; i < population_size * mutate_percent; ++i) {
+        Gene src = population[r() % population_size];
+        if (src.gene.size() > 0) {
+            auto mutant = one_point_mutate(src, pts.size());
+            population.push_back(mutant);
+        }
+    }
+}
+
+void Pathfinder::select_population(vector<Gene>& population,
+        size_t population_size, size_t preserve_best, size_t preserve_worst) const {
+    vector<Gene> best = { population.begin(), population.begin() + population_size - preserve_worst };
+    best.insert(best.end(), population.end() - preserve_worst, population.end());
+    population = best;
 }
 
 vector<Point> Pathfinder::find_path(size_t population_size, size_t epoch_number,
-        size_t valueless_epoch_number, double cross_percent, bool report) const {
+        size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst,
+        double cross_percent, double mutate_percent, bool report) const {
     vector<Gene> population(population_size);
     double last_value = 0;
     size_t valueless_epochs = 0;
     init_population(population);
     for (size_t i = 0; i < epoch_number; ++i) {
         cross_population(population, cross_percent);
+        mutate_population(population, mutate_percent);
         sort_population(population);
-        select_population(population, population_size);
+        select_population(population, population_size, preserve_best, preserve_worst);
         double curr_value = population[0].value;
         if (report) {
             cout << "==================== Iteration " << i + 1 << " ====================\n";
-            cout << "Current best path: ";
-            for (size_t i : population[0].gene) {
-                cout << i << " ";
-            }
-            cout << "\nCurrent best value: " << curr_value << "\n\n";
+            cout << "Current best value: " << curr_value << "\n\n";
         }
         if (valueless_epoch_number == 0) {
             continue;
