@@ -1,7 +1,7 @@
 #ifndef PATHFINDER_HPP
 #define PATHFINDER_HPP
 
-#include "point.hpp"
+#include "../geometry/point.hpp"
 #include <vector>
 using std::vector;
 

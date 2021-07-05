@@ -1,7 +1,7 @@
 #include <iostream>
-#include "polygon.hpp"
-#include "point.hpp"
-#include "genetic_algo.hpp"
+#include "../geometry/polygon.hpp"
+#include "../geometry/point.hpp"
+#include "../genetic_algorithm/genetic_algo.hpp"
 using namespace std;
 
 int main()

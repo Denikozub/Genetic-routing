@@ -1,8 +1,8 @@
 #ifndef GENETIC_ALGO_HPP
 #define GENETIC_ALGO_HPP
 
-#include "pathfinder.hpp"
-#include "polygon.hpp"
+#include "../pathfinder/pathfinder.hpp"
+#include "../geometry/polygon.hpp"
 #include "gene.hpp"
 using std::pair;
 

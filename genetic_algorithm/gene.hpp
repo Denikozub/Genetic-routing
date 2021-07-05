@@ -1,8 +1,8 @@
 #ifndef GENE_HPP
 #define GENE_HPP
 
-#include "point.hpp"
-#include "polygon.hpp"
+#include "../geometry/point.hpp"
+#include "../geometry/polygon.hpp"
 #include <vector>
 using std::vector;
 using std::pair;
