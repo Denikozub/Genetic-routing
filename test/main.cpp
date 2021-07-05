@@ -25,13 +25,13 @@ int main()
         size_t preserve_worst = 3;
         double cross_percent = 0.5;
         double mutate_percent = 0.5;
-        int cross_mode = 0;
-        int mutate_mode = 0;
+        int cross_mode = 1;
+        int mutate_mode = 1;
         int select_mode = 0;
 
         const auto& path = pathfinder.find_path(population_size, epoch_number,
                 valueless_epoch_number, preserve_best, preserve_worst,
-                cross_percent, mutate_percent, cross_mode, mutate_mode, select_mode, true);
+                cross_mode, mutate_mode, select_mode, cross_percent, mutate_percent, false);
         cout << "Path found: " << start << " -> ";
         for (const auto& point : path) {
             cout << point << " -> ";

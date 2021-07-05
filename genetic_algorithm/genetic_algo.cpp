@@ -49,7 +49,7 @@ void GeneticAlgo::sort_population(vector<Gene>& population) const {
         [](const Gene& gene1, const Gene& gene2) { return gene1.get_value() < gene2.get_value(); });
 }
 
-void GeneticAlgo::cross_population_chance(vector<Gene>& population, double cross_percent) const {
+void GeneticAlgo::cross_population_chance(vector<Gene>& population) const {
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size; ++i) {
         Gene parent1 = population[i];
@@ -77,7 +77,7 @@ void GeneticAlgo::cross_population_chance(vector<Gene>& population, double cross
 void GeneticAlgo::cross_population_random(vector<Gene>& population, double cross_percent) const {
     random_device r;
     size_t population_size = population.size();
-    for (size_t i = 0; i < population_size * 0.5 / 2; ++i) {
+    for (size_t i = 0; i < population_size * cross_percent / 2; ++i) {
         Gene parent1 = population[r() % population_size];
         Gene parent2 = population[r() % population_size];
         if (parent1.size() <= 1 && parent2.size() <= 1) {
@@ -91,7 +91,7 @@ void GeneticAlgo::cross_population_random(vector<Gene>& population, double cross
     }
 }
 
-void GeneticAlgo::mutate_population_chance(vector<Gene>& population, double mutate_percent) const {
+void GeneticAlgo::mutate_population_chance(vector<Gene>& population) const {
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size; ++i) {
         Gene src = population[i];
@@ -110,7 +110,7 @@ void GeneticAlgo::mutate_population_chance(vector<Gene>& population, double muta
 void GeneticAlgo::mutate_population_random(vector<Gene>& population, double mutate_percent) const {
     random_device r;
     size_t population_size = population.size();
-    for (size_t i = 0; i < population_size * 0.5; ++i) {
+    for (size_t i = 0; i < population_size * mutate_percent; ++i) {
         Gene src = population[r() % population_size];
         if (src.size() == 0) {
             continue;
@@ -153,8 +153,8 @@ void GeneticAlgo::select_population_best(vector<Gene>& population,
 
 vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number,
         size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst,
-        double cross_percent, double mutate_percent, int cross_mode, int mutate_mode,
-        int select_mode, bool report) const {
+        int cross_mode, int mutate_mode, int select_mode, double cross_percent,
+        double mutate_percent, bool report) const {
 
     if (population_size <= 0) {
         throw invalid_argument("Wrong population size");
@@ -201,7 +201,7 @@ vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number
         if (report) cout << "Crossing...\n";
         if (cross_mode == 0) {
             update_population_chance(population);
-            cross_population_chance(population, cross_percent);
+            cross_population_chance(population);
         }
         else {
             cross_population_random(population, cross_percent);
@@ -211,7 +211,7 @@ vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number
         if (report) cout << "Crossing...\n";
         if (mutate_mode == 0) {
             update_population_chance(population);
-            mutate_population_chance(population, mutate_percent);
+            mutate_population_chance(population);
         }
         else {
             mutate_population_random(population, mutate_percent);

@@ -10,7 +10,7 @@ public:
     virtual void set_start(const Point&) = 0;
     virtual void set_end(const Point&) = 0;
     virtual vector<Point> find_path(size_t, size_t, size_t, size_t,
-        size_t, double, double, int, int, int, bool=false) const = 0;
+        size_t, int, int, int, double=0.5, double=0.5, bool=false) const = 0;
 };
 
 #endif
