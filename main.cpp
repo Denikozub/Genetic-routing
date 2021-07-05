@@ -1,7 +1,7 @@
 #include <iostream>
 #include "polygon.hpp"
 #include "point.hpp"
-#include "pathfinder.hpp"
+#include "genetic_algo.hpp"
 using namespace std;
 
 int main()
@@ -16,7 +16,7 @@ int main()
         vector<pair<Polygon, int>> obstacles({ {p1, 100}, {p2, 100}, {p3, 100}, {p4, 100}, {p5, 100}, {p6, 100} });
         Point start({ 4, 2 }), end({ 4, 10 });
 
-        Pathfinder pa(obstacles, start, end);
+        GeneticAlgo pathfinder(obstacles, start, end);
         size_t population_size = 50;
         size_t epoch_number = 300;
         size_t valueless_epoch_number = 15;
@@ -25,7 +25,7 @@ int main()
         double cross_percent = 0.5;
         double mutate_percent = 0.5;
 
-        const auto& path = pa.find_path(population_size, epoch_number, valueless_epoch_number,
+        const auto& path = pathfinder.find_path(population_size, epoch_number, valueless_epoch_number,
                 preserve_best, preserve_worst, cross_percent, mutate_percent, true);
         cout << "Path found: " << start << " -> ";
         for (const auto& point : path) {

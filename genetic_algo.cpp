@@ -1,4 +1,4 @@
-#include "pathfinder.hpp"
+#include "genetic_algo.hpp"
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 using std::invalid_argument;
 
-Pathfinder::Pathfinder(const vector<pair<Polygon, int>>& set_obstacles, const Point& set_start,
+GeneticAlgo::GeneticAlgo(const vector<pair<Polygon, int>>& set_obstacles, const Point& set_start,
         const Point& set_end) : obstacles(set_obstacles), start(set_start), end(set_end) {
     for (const auto& polygon : obstacles) {
         for (auto it = polygon.first.geometry().begin(); it != polygon.first.geometry().end() - 1; ++it) {
@@ -18,21 +18,21 @@ Pathfinder::Pathfinder(const vector<pair<Polygon, int>>& set_obstacles, const Po
     }
 }
 
-void Pathfinder::set_start(const Point& set_start) {
+void GeneticAlgo::set_start(const Point& set_start) {
     start = set_start;
 }
 
-void Pathfinder::set_end(const Point& set_end) {
+void GeneticAlgo::set_end(const Point& set_end) {
     end = set_end;
 }
 
-void Pathfinder::init_population(vector<Gene>& population) const {
+void GeneticAlgo::init_population(vector<Gene>& population) const {
     for (auto& g : population) {
         g.init(pts.size());
     }
 }
 
-void Pathfinder::sort_population(vector<Gene>& population) const {
+void GeneticAlgo::sort_population(vector<Gene>& population) const {
     for (auto& g : population) {
         g.update_value(pts, obstacles, start, end);
     }
@@ -40,7 +40,7 @@ void Pathfinder::sort_population(vector<Gene>& population) const {
         [](const Gene& gene1, const Gene& gene2) { return gene1.value < gene2.value; });
 }
 
-void Pathfinder::cross_population(vector<Gene>& population, double cross_percent) const {
+void GeneticAlgo::cross_population(vector<Gene>& population, double cross_percent) const {
     random_device r;
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * cross_percent / 2; ++i) {
@@ -54,7 +54,7 @@ void Pathfinder::cross_population(vector<Gene>& population, double cross_percent
     }
 }
 
-void Pathfinder::mutate_population(vector<Gene>& population, double mutate_percent) const {
+void GeneticAlgo::mutate_population(vector<Gene>& population, double mutate_percent) const {
     random_device r;
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * mutate_percent; ++i) {
@@ -66,14 +66,14 @@ void Pathfinder::mutate_population(vector<Gene>& population, double mutate_perce
     }
 }
 
-void Pathfinder::select_population(vector<Gene>& population,
+void GeneticAlgo::select_population(vector<Gene>& population,
         size_t population_size, size_t preserve_best, size_t preserve_worst) const {
     vector<Gene> best = { population.begin(), population.begin() + population_size - preserve_worst };
     best.insert(best.end(), population.end() - preserve_worst, population.end());
     population = best;
 }
 
-vector<Point> Pathfinder::find_path(size_t population_size, size_t epoch_number,
+vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number,
         size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst,
         double cross_percent, double mutate_percent, bool report) const {
     if (population_size <= 0) {
