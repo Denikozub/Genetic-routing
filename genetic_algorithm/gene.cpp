@@ -64,23 +64,24 @@ void Gene::update_chance(double average) {
     chance = average / value;
 }
 
+#include <iostream>
+using std::cout;
+
 bool Gene::selected() {
     random_device r;
     uniform_real_distribution<> uniform_zero_to_one(0.0, 1.0);
-    if (uniform_zero_to_one(r) < chance) {
-        return false;
-    }
     if (chance >= 1) {
-        chance -= 1;
+        chance--;
+        return true;
     }
-    return true;
+    return uniform_zero_to_one(r) <= chance;
 }
 
 bool Gene::survived() const {
     random_device r;
     uniform_real_distribution<> uniform_zero_to_one(0.0, 1.0);
     double survive_chance = chance / (chance + 1);
-    return uniform_zero_to_one(r) >= survive_chance;
+    return uniform_zero_to_one(r) <= survive_chance;
 }
 
 pair<Gene, Gene> one_point_cross(const Gene& parent1, const Gene& parent2) {

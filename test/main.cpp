@@ -18,7 +18,7 @@ int main()
         Point start({ 4, 2 }), end({ 4, 10 });
 
         GeneticAlgo pathfinder(obstacles, start, end);
-        size_t population_size = 50;
+        size_t population_size = 30;
         size_t epoch_number = 300;
         size_t valueless_epoch_number = 15;
         size_t preserve_best = 3;
