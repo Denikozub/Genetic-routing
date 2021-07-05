@@ -1,8 +1,8 @@
 #include "genetic_algo.hpp"
 #include <iostream>
+#include <random>
 #include <algorithm>
 #include <stdexcept>
-#include <random>
 using std::random_device;
 using std::sort;
 using std::cout;
@@ -29,53 +29,133 @@ void GeneticAlgo::set_end(const Point& set_end) {
 void GeneticAlgo::init_population(vector<Gene>& population) const {
     for (auto& g : population) {
         g.init(pts.size());
+        g.update_value(pts, obstacles, start, end);
+    }
+}
+
+void GeneticAlgo::update_population_chance(vector<Gene>& population) const {
+    double average = 0;
+    for (auto& g : population) {
+        average += g.get_value();
+    }
+    average /= population.size();
+    for (auto& g : population) {
+        g.update_chance(average);
     }
 }
 
 void GeneticAlgo::sort_population(vector<Gene>& population) const {
-    for (auto& g : population) {
-        g.update_value(pts, obstacles, start, end);
-    }
     sort(population.begin(), population.end(),
-        [](const Gene& gene1, const Gene& gene2) { return gene1.value < gene2.value; });
+        [](const Gene& gene1, const Gene& gene2) { return gene1.get_value() < gene2.get_value(); });
 }
 
-void GeneticAlgo::cross_population(vector<Gene>& population, double cross_percent) const {
-    random_device r;
+void GeneticAlgo::cross_population_chance(vector<Gene>& population, double cross_percent) const {
     size_t population_size = population.size();
-    for (size_t i = 0; i < population_size * cross_percent / 2; ++i) {
-        Gene parent1 = population[r() % population_size];
-        Gene parent2 = population[r() % population_size];
-        if (parent1.gene.size() > 1 || parent2.gene.size() > 1) {
+    for (size_t i = 0; i < population_size; ++i) {
+        Gene parent1 = population[i];
+        if (!parent1.selected()) {
+            continue;
+        }
+        for (size_t j = i + 1; j < population_size; ++j) {
+            Gene parent2 = population[j];
+            if (parent1.size() <= 1 && parent2.size() <= 1) {
+                continue;
+            }
+            if (!parent2.selected()) {
+                continue;
+            }
             auto children = one_point_cross(parent1, parent2);
+            children.first.update_value(pts, obstacles, start, end);
+            children.second.update_value(pts, obstacles, start, end);
             population.push_back(children.first);
             population.push_back(children.second);
+            break;
         }
     }
 }
 
-void GeneticAlgo::mutate_population(vector<Gene>& population, double mutate_percent) const {
+void GeneticAlgo::cross_population_random(vector<Gene>& population, double cross_percent) const {
     random_device r;
     size_t population_size = population.size();
-    for (size_t i = 0; i < population_size * mutate_percent; ++i) {
+    for (size_t i = 0; i < population_size * 0.5 / 2; ++i) {
+        Gene parent1 = population[r() % population_size];
+        Gene parent2 = population[r() % population_size];
+        if (parent1.size() <= 1 && parent2.size() <= 1) {
+            continue;
+        }
+        auto children = one_point_cross(parent1, parent2);
+        children.first.update_value(pts, obstacles, start, end);
+        children.second.update_value(pts, obstacles, start, end);
+        population.push_back(children.first);
+        population.push_back(children.second);
+    }
+}
+
+void GeneticAlgo::mutate_population_chance(vector<Gene>& population, double mutate_percent) const {
+    size_t population_size = population.size();
+    for (size_t i = 0; i < population_size; ++i) {
+        Gene src = population[i];
+        if (src.size() == 0) {
+            continue;
+        }
+        if (!src.selected()) {
+            continue;
+        }
+        auto mutant = one_point_mutate(src, pts.size());
+        mutant.update_value(pts, obstacles, start, end);
+        population.push_back(mutant);
+    }
+}
+
+void GeneticAlgo::mutate_population_random(vector<Gene>& population, double mutate_percent) const {
+    random_device r;
+    size_t population_size = population.size();
+    for (size_t i = 0; i < population_size * 0.5; ++i) {
         Gene src = population[r() % population_size];
-        if (src.gene.size() > 0) {
-            auto mutant = one_point_mutate(src, pts.size());
-            population.push_back(mutant);
+        if (src.size() == 0) {
+            continue;
+        }
+        auto mutant = one_point_mutate(src, pts.size());
+        mutant.update_value(pts, obstacles, start, end);
+        population.push_back(mutant);
+    }
+}
+
+void GeneticAlgo::select_population_chance(vector<Gene>& population,
+        size_t population_size, size_t preserve_best, size_t preserve_worst) const {
+    size_t current_size = population.size();
+    if (current_size == population_size) {
+        return;
+    }
+    size_t killed = 0;
+    while (killed < current_size - population_size) {
+        for (auto it = population.begin() + preserve_best; it != population.end() - preserve_worst;) {
+            if ((*it).survived()) {
+                ++it;
+                continue;
+            }
+            it = population.erase(it);
+            ++killed;
+            if (killed == current_size - population_size) {
+                return;
+            }
         }
     }
 }
 
-void GeneticAlgo::select_population(vector<Gene>& population,
+void GeneticAlgo::select_population_best(vector<Gene>& population,
         size_t population_size, size_t preserve_best, size_t preserve_worst) const {
     vector<Gene> best = { population.begin(), population.begin() + population_size - preserve_worst };
     best.insert(best.end(), population.end() - preserve_worst, population.end());
     population = best;
 }
 
+
 vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number,
         size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst,
-        double cross_percent, double mutate_percent, bool report) const {
+        double cross_percent, double mutate_percent, int cross_mode, int mutate_mode,
+        int select_mode, bool report) const {
+
     if (population_size <= 0) {
         throw invalid_argument("Wrong population size");
     }
@@ -85,7 +165,7 @@ vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number
     if (valueless_epoch_number < 0) {
         throw invalid_argument("Wrong valueless epoch number");
     }
-    if (preserve_best < 0 || preserve_best > population_size) {
+    if (preserve_best <= 0 || preserve_best > population_size) {
         throw invalid_argument("Wrong preserve_best number");
     }
     if (preserve_worst < 0 || preserve_worst > population_size) {
@@ -100,20 +180,57 @@ vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number
     if (mutate_percent <= 0) {
         throw invalid_argument("Wrong mutate percent");
     }
+    if (cross_mode < 0 || cross_mode > 1) {
+        throw invalid_argument("Wrong cross mode percent");
+    }
+    if (mutate_mode < 0 || mutate_mode > 1) {
+        throw invalid_argument("Wrong mutate mode percent");
+    }
+    if (select_mode < 0 || select_mode > 1) {
+        throw invalid_argument("Wrong select mode percent");
+    }
+
     vector<Gene> population(population_size);
+    init_population(population);
+
     double last_value = 0;
     size_t valueless_epochs = 0;
-    init_population(population);
     for (size_t i = 0; i < epoch_number; ++i) {
-        cross_population(population, cross_percent);
-        mutate_population(population, mutate_percent);
-        sort_population(population);
-        select_population(population, population_size, preserve_best, preserve_worst);
-        double curr_value = population[0].value;
-        if (report) {
-            cout << "==================== Iteration " << i + 1 << " ====================\n";
-            cout << "Current best value: " << curr_value << "\n\n";
+        if (report) cout << "==================== Iteration " << i + 1 << " ====================\n";
+        
+        if (report) cout << "Crossing...\n";
+        if (cross_mode == 0) {
+            update_population_chance(population);
+            cross_population_chance(population, cross_percent);
         }
+        else {
+            cross_population_random(population, cross_percent);
+        }
+        if (report) cout << "Population: " << population.size() << endl;
+
+        if (report) cout << "Crossing...\n";
+        if (mutate_mode == 0) {
+            update_population_chance(population);
+            mutate_population_chance(population, mutate_percent);
+        }
+        else {
+            mutate_population_random(population, mutate_percent);
+        }
+        if (report) cout << "Population: " << population.size() << endl;
+
+        if (report) cout << "Selecting...\n";
+        sort_population(population);
+        if (mutate_mode == 0) {
+            update_population_chance(population);
+            select_population_chance(population, population_size, preserve_best, preserve_worst);
+        }
+        else {
+            select_population_best(population, population_size, preserve_best, preserve_worst);
+        }
+        if (report) cout << "Population: " << population.size() << endl;
+
+        double curr_value = population[0].get_value();
+        if (report) cout << "Current best value: " << curr_value << "\n\n";
         if (valueless_epoch_number == 0) {
             continue;
         }
@@ -132,12 +249,8 @@ vector<Point> GeneticAlgo::find_path(size_t population_size, size_t epoch_number
     }
 
     if (report && valueless_epoch_number == 0 || valueless_epochs != valueless_epoch_number) {
-        cout << "Max valueless epoch number reached\n\n";
+        cout << "Max epoch number reached\n\n";
     }
 
-    vector<Point> path;
-    for (size_t i : population[0].gene) {
-        path.push_back(pts[i]);
-    }
-    return path;
+    return population[0].path(pts);
 }

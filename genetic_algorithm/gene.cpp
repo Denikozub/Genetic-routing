@@ -4,9 +4,18 @@
 #include <exception>
 #include <unordered_set>
 using std::random_device;
+using std::uniform_real_distribution;
 using std::generate;
 using std::unordered_set;
 using std::invalid_argument;
+using std::logic_error;
+
+double Gene::size() const {
+    return len;
+}
+double Gene::get_value() const {
+    return value;
+}
 
 void Gene::init(size_t point_number) {
     random_device r;
@@ -45,6 +54,35 @@ void Gene::update_value(const vector<Point>& pts,
     value = path_length;
 }
 
+void Gene::update_chance(double average) {
+    if (value <= 0) {
+        throw logic_error("Update values first");
+    }
+    if (average <= 0) {
+        throw invalid_argument("Incorrect average value");
+    }
+    chance = average / value;
+}
+
+bool Gene::selected() {
+    random_device r;
+    uniform_real_distribution<> uniform_zero_to_one(0.0, 1.0);
+    if (uniform_zero_to_one(r) < chance) {
+        return false;
+    }
+    if (chance >= 1) {
+        chance -= 1;
+    }
+    return true;
+}
+
+bool Gene::survived() const {
+    random_device r;
+    uniform_real_distribution<> uniform_zero_to_one(0.0, 1.0);
+    double survive_chance = chance / (chance + 1);
+    return uniform_zero_to_one(r) >= survive_chance;
+}
+
 pair<Gene, Gene> one_point_cross(const Gene& parent1, const Gene& parent2) {
     if (parent1.gene.size() <= 1 && parent2.gene.size() <= 1) {
         throw invalid_argument("At least one of the parents should have 2 or more points");
@@ -73,4 +111,12 @@ Gene one_point_mutate(const Gene& src, size_t point_number) {
     mutant.gene[point_mutate] = r() % point_number;
     mutant.remove_duplicates();
     return mutant;
+}
+
+vector<Point> Gene::path(const vector<Point>& pts) {
+    vector<Point> path;
+    for (size_t i : gene) {
+        path.push_back(pts[i]);
+    }
+    return path;
 }
