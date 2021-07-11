@@ -3,14 +3,14 @@
 
 #include <vector>
 #include "gene.hpp"
-#include "fitness.hpp"
+#include "map_data.hpp"
 
 class Population {
     size_t max_size, range;
     std::vector<Gene> population;
     void add_gene(const Gene&);
 public:
-    Population(size_t, size_t, const Fitness&);
+    Population(size_t, size_t, MapData&);
     size_t size();
     void init_population();
     void update_population_chance();
@@ -20,7 +20,8 @@ public:
     void mutate_population_random(double);
     void select_population_chance(size_t, size_t);
     void select_population_best(size_t, size_t);
-    const std::vector<size_t>& get_best();
+    double best_value();
+    const std::vector<size_t>& best_gene();
 };
 
 #endif

@@ -8,8 +8,8 @@ void Population::add_gene(const Gene& gene) {
 }
 
 
-Population::Population(size_t set_size, size_t set_range, const Fitness& fitness) :
-        max_size(set_size), range(set_range), population(max_size, fitness) {}
+Population::Population(size_t set_size, size_t set_range, MapData& data) :
+        max_size(set_size), range(set_range), population(max_size, data) {}
 
 
 size_t Population::size() {
@@ -81,16 +81,14 @@ void Population::mutate_population_chance() {
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size; ++i) {
         Gene src = population[i];
-        if (src.size() == 0) {
+        if (src.size() < 2) {
             continue;
         }
         if (!src.selected()) {
             continue;
         }
         const auto& mutants = mutate(src);
-        for (const auto& mutant : mutants) {
-            add_gene(mutant);
-        }
+        add_gene(std::max(std::max(mutants[0], mutants[1]), mutants[2]));
     }
 }
 
@@ -100,13 +98,11 @@ void Population::mutate_population_random(double mutate_percent) {
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * mutate_percent; ++i) {
         Gene src = population[r() % population_size];
-        if (src.size() == 0) {
+        if (src.size() < 2) {
             continue;
         }
         const auto& mutants = mutate(src);
-        for (const auto& mutant : mutants) {
-            add_gene(mutant);
-        }
+        add_gene(std::max(std::max(mutants[0], mutants[1]), mutants[2]));
     }
 }
 
@@ -140,6 +136,11 @@ void Population::select_population_best(size_t preserve_best, size_t preserve_wo
 }
 
 
-template <typename T> std::vector<T> Population::best_values() {
-    return population[0].values(pts);
+double Population::best_value() {
+    return population[0].get_fitness_value();
+}
+
+
+const std::vector<size_t>& Population::best_gene() {
+    return population[0].get_gene();
 }

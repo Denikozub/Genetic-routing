@@ -2,7 +2,7 @@
 #include "../geometry/polygon.hpp"
 #include "../geometry/point.hpp"
 #include "../genetic_algorithm/genetic_algo.hpp"
-#include "../genetic_algorithm/route_fitness.hpp"
+#include "../genetic_algorithm/map_data.hpp"
 using namespace std;
 
 int main()
@@ -17,10 +17,10 @@ int main()
         vector<pair<Polygon, int>> obstacles({ {p1, 100}, {p2, 100}, {p3, 100}, {p4, 100}, {p5, 100}, {p6, 100} });
         Point start({ 4, 2 }), end({ 4, 10 });
 
-        RouteFitness fitness (obstacles, start, end);
-        GeneticAlgo pathfinder();
+        MapData data (obstacles, start, end);
+        GeneticAlgo pathfinder;
 
-        size_t population_size = 30;
+        size_t population_size = 70;
         size_t epoch_number = 300;
         size_t valueless_epoch_number = 15;
         size_t preserve_best = 3;
@@ -31,9 +31,9 @@ int main()
         int mutate_mode = 1;
         int select_mode = 0;
 
-        const auto& path = pathfinder.find_path(population_size, epoch_number,
+        const auto& path = pathfinder.find_path(data, population_size, data.pts.size(), epoch_number,
                 valueless_epoch_number, preserve_best, preserve_worst,
-                cross_mode, mutate_mode, select_mode, cross_percent, mutate_percent, false);
+                cross_mode, mutate_mode, select_mode, cross_percent, mutate_percent, true);
         cout << "Path found: " << start << " -> ";
         for (const auto& point : path) {
             cout << point << " -> ";

@@ -4,8 +4,7 @@
 #include "population.hpp"
 
 
-// template <typename T>
-std::vector<T> GeneticAlgo::find_path(const Fitness& fitness, size_t population_size,
+std::vector<size_t> GeneticAlgo::find_path(MapData& data, size_t population_size,
         size_t range, size_t epoch_number, size_t valueless_epoch_number, size_t preserve_best,
         size_t preserve_worst, int cross_mode, int mutate_mode, int select_mode,
         double cross_percent, double mutate_percent, bool report) const {
@@ -44,7 +43,7 @@ std::vector<T> GeneticAlgo::find_path(const Fitness& fitness, size_t population_
         throw std::invalid_argument("Wrong select mode percent");
     }
 
-    Population population(population_size, range, fitness);
+    Population population(population_size, range, data);
     population.init_population();
 
     double last_value = 0;
@@ -52,17 +51,9 @@ std::vector<T> GeneticAlgo::find_path(const Fitness& fitness, size_t population_
     for (size_t i = 0; i < epoch_number; ++i) {
         if (report) std::cout << "==================== Iteration " << i + 1 << " ====================\n";
         
-        if (report) std::cout << "Crossing...\n";
-        if (cross_mode == 0) {
-            population.update_population_chance();
-            population.cross_population_chance();
-        }
-        else {
-            population.cross_population_random(cross_percent);
-        }
-        if (report) std::cout << "Population: " << population.size() << std::endl;
 
-        if (report) std::cout << "Crossing...\n";
+
+        if (report) std::cout << "Mutating...\n";
         if (mutate_mode == 0) {
             population.update_population_chance();
             population.mutate_population_chance();
@@ -82,7 +73,7 @@ std::vector<T> GeneticAlgo::find_path(const Fitness& fitness, size_t population_
         }
         if (report) std::cout << "Population: " << population.size() << std::endl;
 
-        double curr_value = population[0].get_value();
+        double curr_value = population.best_value();
         if (report) std::cout << "Current best value: " << curr_value << "\n\n";
         if (valueless_epoch_number == 0) {
             continue;
@@ -105,5 +96,5 @@ std::vector<T> GeneticAlgo::find_path(const Fitness& fitness, size_t population_
         std::cout << "Max epoch number reached\n\n";
     }
 
-    return population[0].path(pts);
+    return population.best_gene();
 }
