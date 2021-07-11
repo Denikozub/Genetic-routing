@@ -2,7 +2,7 @@
 #include "../geometry/polygon.hpp"
 #include "../geometry/point.hpp"
 #include "../genetic_algorithm/genetic_algo.hpp"
-#include "../genetic_algorithm/map_data.hpp"
+#include "../genetic_data/map_data.hpp"
 using namespace std;
 
 int main()
@@ -31,11 +31,11 @@ int main()
         int mutate_mode = 0;
         int select_mode = 0;
 
-        const auto& path_index = pathfinder.find_path(&data, population_size, epoch_number,
-                valueless_epoch_number, preserve_best, preserve_worst,
-                cross_mode, mutate_mode, select_mode, cross_percent, mutate_percent, true);
+        const auto& path = pathfinder.find_path(&data, population_size, epoch_number,
+                valueless_epoch_number, preserve_best, preserve_worst, cross_mode,
+                mutate_mode, select_mode, cross_percent, mutate_percent, true);
         cout << "Path found: " << start << " -> ";
-        for (const auto& point : path_index) {
+        for (const auto& point : path) {
             cout << data.pts[point] << " -> ";
         }
         cout << end << endl;

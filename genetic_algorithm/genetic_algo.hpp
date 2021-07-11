@@ -2,7 +2,7 @@
 #define GENETIC_ALGO_HPP
 
 #include <vector>
-#include "data.hpp"
+#include "../genetic_data/data.hpp"
 
 class GeneticAlgo {
 public:

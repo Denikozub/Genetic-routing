@@ -1,7 +1,7 @@
 #ifndef GENE_HPP
 #define GENE_HPP
 
-#include "map_data.hpp"
+#include "../genetic_data/data.hpp"
 #include <vector>
 
 class Gene {

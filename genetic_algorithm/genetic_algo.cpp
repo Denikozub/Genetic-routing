@@ -1,7 +1,7 @@
 #include "genetic_algo.hpp"
+#include "population.hpp"
 #include <iostream>
 #include <stdexcept>
-#include "population.hpp"
 
 
 std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_size,
@@ -46,7 +46,7 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
     Population population(population_size, data);
     population.init_population();
 
-    double last_value = 0;
+    double last_fitness_value = 0;
     size_t valueless_epochs = 0;
     for (size_t i = 0; i < epoch_number; ++i) {
         if (report) std::cout << "==================== Iteration " << i + 1 << " ====================\n";
@@ -81,12 +81,12 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
         }
         if (report) std::cout << "Population: " << population.size() << std::endl;
 
-        double curr_value = population.best_value();
-        if (report) std::cout << "Current best value: " << curr_value << "\n\n";
+        double curr_fitness_value = population.best_value();
+        if (report) std::cout << "Current best value: " << curr_fitness_value << "\n\n";
         if (valueless_epoch_number == 0) {
             continue;
         }
-        if (last_value == curr_value) {
+        if (last_fitness_value == curr_fitness_value) {
             ++valueless_epochs;
             if (valueless_epochs == valueless_epoch_number) {
                 if (report) {
@@ -95,7 +95,7 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
                 break;
             }
         } else {
-            last_value = curr_value;
+            last_fitness_value = curr_fitness_value;
             valueless_epochs = 0;
         }
     }

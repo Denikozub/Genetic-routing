@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "gene.hpp"
-#include "data.hpp"
+#include "../genetic_data/data.hpp"
 
 class Population {
     size_t max_size, range;

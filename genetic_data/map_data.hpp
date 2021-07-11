@@ -2,7 +2,6 @@
 #define MAP_DATA_HPP
 
 #include "data.hpp"
-#include <vector>
 #include "../geometry/point.hpp"
 #include "../geometry/polygon.hpp"
 
