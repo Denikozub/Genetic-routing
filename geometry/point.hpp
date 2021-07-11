@@ -2,7 +2,6 @@
 #define POINT_HPP
 
 #include <iostream>
-using std::ostream;
 
 class Point {
 public:
@@ -10,7 +9,7 @@ public:
     Point(double, double);
     friend bool operator== (const Point&, const Point&);
     friend bool operator!= (const Point&, const Point&);
-    friend ostream& operator<< (ostream&, const Point&);
+    friend std::ostream& operator<< (std::ostream&, const Point&);
 };
 
 #endif

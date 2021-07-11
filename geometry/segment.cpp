@@ -2,7 +2,9 @@
 #include "vector.hpp"
 #include "polygon.hpp"
 
+
 Segment::Segment(const Point& set_a, const Point& set_b) : a(set_a), b(set_b) {}
+
 
 template <> bool Segment::crosses(const Segment& segment, bool count_touch) {
     return count_touch ?
@@ -12,9 +14,11 @@ template <> bool Segment::crosses(const Segment& segment, bool count_touch) {
         cross_prod(Vector(a, b), Vector(b, segment.b)) * cross_prod(Vector(a, b), Vector(b, segment.a)) < 0;
 }
 
+
 double Segment::len() {
     return Vector(a, b).len();
 }
+
 
 template <> bool Segment::crosses(const Polygon& polygon, bool count_touch) {
     if (count_touch) {
@@ -48,7 +52,8 @@ template <> bool Segment::crosses(const Polygon& polygon, bool count_touch) {
     return false;
 }
 
-ostream& operator<< (ostream& out, const Segment& segment) {
+
+std::ostream& operator<< (std::ostream& out, const Segment& segment) {
     out << "[ " << segment.a << ", " << segment.b << " ]";
     return out;
 }

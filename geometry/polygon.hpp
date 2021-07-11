@@ -4,12 +4,11 @@
 #include "point.hpp"
 #include "segment.hpp"
 #include <vector>
-using std::vector;
 
 class Iterator {
-    vector<Point>::const_iterator pts_it, pts_end;
+    std::vector<Point>::const_iterator pts_it, pts_end;
 public:
-    Iterator(vector<Point>::const_iterator, vector<Point>::const_iterator);
+    Iterator(std::vector<Point>::const_iterator, std::vector<Point>::const_iterator);
     const Segment operator* () const;
     Iterator& operator++ ();
     bool operator== (const Iterator&) const;
@@ -17,13 +16,13 @@ public:
 };
 
 class Polygon {
-    vector<Point> pts;
+    std::vector<Point> pts;
 public:
-    Polygon(const vector<Point>&);
-    const vector<Point>& geometry() const;
+    Polygon(const std::vector<Point>&);
+    const std::vector<Point>& geometry() const;
     Iterator begin() const;
     Iterator end() const;
-    friend ostream& operator<< (ostream&, const Polygon&);
+    friend std::ostream& operator<< (std::ostream&, const Polygon&);
 };
 
 #endif

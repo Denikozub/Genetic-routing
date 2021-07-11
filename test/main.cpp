@@ -1,8 +1,8 @@
 #include <iostream>
-#include <random>
 #include "../geometry/polygon.hpp"
 #include "../geometry/point.hpp"
 #include "../genetic_algorithm/genetic_algo.hpp"
+#include "../genetic_algorithm/route_fitness.hpp"
 using namespace std;
 
 int main()
@@ -17,7 +17,9 @@ int main()
         vector<pair<Polygon, int>> obstacles({ {p1, 100}, {p2, 100}, {p3, 100}, {p4, 100}, {p5, 100}, {p6, 100} });
         Point start({ 4, 2 }), end({ 4, 10 });
 
-        GeneticAlgo pathfinder(obstacles, start, end);
+        RouteFitness fitness (obstacles, start, end);
+        GeneticAlgo pathfinder();
+
         size_t population_size = 30;
         size_t epoch_number = 300;
         size_t valueless_epoch_number = 15;

@@ -1,30 +1,34 @@
 #ifndef GENE_HPP
 #define GENE_HPP
 
-#include "../geometry/point.hpp"
-#include "../geometry/polygon.hpp"
+#include "fitness.hpp"
 #include <vector>
-using std::vector;
-using std::pair;
 
 class Gene {
-    size_t len = 0;
-    vector<size_t> gene;
-    double value = 0;
-    double chance = 1;
+    const Fitness& evaluator;
+    size_t len;
+    std::vector<size_t> gene;
+    double fitness_value, chance;
     void remove_duplicates();
+    void inverse(size_t, size_t);
+    void insert(size_t, size_t);
+    void swap(size_t, size_t);
 public:
-    Gene() = default;
+    friend class RouteFitness;
+    Gene(const Fitness&);
     double size() const;
-    double get_value() const;
     void init(size_t);
-    void update_value(const vector<Point>&, const vector<pair<Polygon, int>>&, const Point&, const Point&);
+    double get_fitness_value() const;
     void update_chance(double);
     bool selected();
     bool survived() const;
-    friend pair<Gene, Gene> one_point_cross(const Gene&, const Gene&);
-    friend Gene one_point_mutate(const Gene&, size_t);
-    vector<Point> path(const vector<Point>&);
+    friend std::pair<Gene, Gene> cross(const Gene&, const Gene&);
+    friend std::vector<Gene> mutate(const Gene&);
+    friend bool operator>= (const Gene&, const Gene&);
+    friend bool operator<= (const Gene&, const Gene&);
+    friend bool operator> (const Gene&, const Gene&);
+    friend bool operator< (const Gene&, const Gene&);
+    const std::vector<size_t>& get_gene();
 };
 
 #endif
