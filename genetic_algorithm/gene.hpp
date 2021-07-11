@@ -16,7 +16,7 @@ class Gene {
     void cut_fill(size_t, size_t, const Gene&);
 public:
     Gene(const Data*);
-    double size() const;
+    size_t size() const;
     void init(size_t);
     double get_fitness_value() const;
     void update_chance(double);

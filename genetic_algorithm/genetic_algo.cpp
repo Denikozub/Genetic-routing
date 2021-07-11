@@ -2,6 +2,7 @@
 #include "population.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <cmath>
 
 
 std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_size,
@@ -15,13 +16,10 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
     if (epoch_number <= 0) {
         throw std::invalid_argument("Wrong epoch number");
     }
-    if (valueless_epoch_number < 0) {
-        throw std::invalid_argument("Wrong valueless epoch number");
-    }
     if (preserve_best <= 0 || preserve_best > population_size) {
         throw std::invalid_argument("Wrong preserve_best number");
     }
-    if (preserve_worst < 0 || preserve_worst > population_size) {
+    if (preserve_worst > population_size) {
         throw std::invalid_argument("Wrong preserve_worst number");
     }
     if (preserve_best + preserve_worst > population_size) {
@@ -86,7 +84,7 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
         if (valueless_epoch_number == 0) {
             continue;
         }
-        if (last_fitness_value == curr_fitness_value) {
+        if (std::fabs(last_fitness_value - curr_fitness_value) < 1e-8) {
             ++valueless_epochs;
             if (valueless_epochs == valueless_epoch_number) {
                 if (report) {
@@ -100,7 +98,7 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
         }
     }
 
-    if (report && valueless_epoch_number == 0 || valueless_epochs != valueless_epoch_number) {
+    if ((report && valueless_epoch_number == 0) || (valueless_epochs != valueless_epoch_number)) {
         std::cout << "Max epoch number reached\n\n";
     }
 

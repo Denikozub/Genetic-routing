@@ -52,7 +52,7 @@ void Gene::cut_fill(size_t cut1, size_t cut2, const Gene& parent) {
 Gene::Gene(const Data* set_data) : data(set_data), len(0), fitness_value(0), chance(0) {}
 
 
-double Gene::size() const {
+size_t Gene::size() const {
     return len;
 }
 
