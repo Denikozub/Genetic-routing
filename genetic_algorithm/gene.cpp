@@ -156,6 +156,6 @@ bool operator< (const Gene& gene1, const Gene& gene2) {
 }
 
 
-const std::vector<size_t>& Gene::get_gene() {
+const std::vector<size_t>& Gene::get_gene() const {
     return gene;
 }

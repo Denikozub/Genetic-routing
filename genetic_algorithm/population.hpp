@@ -20,8 +20,8 @@ public:
     void mutate_population_random(double);
     void select_population_chance(size_t, size_t);
     void select_population_best(size_t, size_t);
-    double best_value();
-    const std::vector<size_t>& best_gene();
+    double best_value() const;
+    const std::vector<size_t>& best_gene() const;
 };
 
 #endif

@@ -26,7 +26,7 @@ public:
     friend std::vector<Gene> mutate_triple(const Gene&);
     friend Gene mutate_one_point(const Gene&, size_t);
     friend bool operator< (const Gene&, const Gene&);
-    const std::vector<size_t>& get_gene();
+    const std::vector<size_t>& get_gene() const;
 };
 
 #endif

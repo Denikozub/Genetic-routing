@@ -146,11 +146,11 @@ void Population::select_population_best(size_t preserve_best, size_t preserve_wo
 }
 
 
-double Population::best_value() {
+double Population::best_value() const {
     return population[0].get_fitness_value();
 }
 
 
-const std::vector<size_t>& Population::best_gene() {
+const std::vector<size_t>& Population::best_gene() const {
     return population[0].get_gene();
 }
