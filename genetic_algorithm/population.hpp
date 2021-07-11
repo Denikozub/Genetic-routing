@@ -3,14 +3,14 @@
 
 #include <vector>
 #include "gene.hpp"
-#include "map_data.hpp"
+#include "data.hpp"
 
 class Population {
     size_t max_size, range;
     std::vector<Gene> population;
     void add_gene(const Gene&);
 public:
-    Population(size_t, size_t, MapData&);
+    Population(size_t, const Data*);
     size_t size();
     void init_population();
     void update_population_chance();

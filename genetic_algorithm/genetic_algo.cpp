@@ -4,8 +4,8 @@
 #include "population.hpp"
 
 
-std::vector<size_t> GeneticAlgo::find_path(MapData& data, size_t population_size,
-        size_t range, size_t epoch_number, size_t valueless_epoch_number, size_t preserve_best,
+std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_size,
+        size_t epoch_number, size_t valueless_epoch_number, size_t preserve_best,
         size_t preserve_worst, int cross_mode, int mutate_mode, int select_mode,
         double cross_percent, double mutate_percent, bool report) const {
 
@@ -43,7 +43,7 @@ std::vector<size_t> GeneticAlgo::find_path(MapData& data, size_t population_size
         throw std::invalid_argument("Wrong select mode percent");
     }
 
-    Population population(population_size, range, data);
+    Population population(population_size, data);
     population.init_population();
 
     double last_value = 0;
@@ -51,7 +51,15 @@ std::vector<size_t> GeneticAlgo::find_path(MapData& data, size_t population_size
     for (size_t i = 0; i < epoch_number; ++i) {
         if (report) std::cout << "==================== Iteration " << i + 1 << " ====================\n";
         
-
+        if (report) std::cout << "Crossing...\n";
+        if (cross_mode == 0) {
+            population.update_population_chance();
+            population.cross_population_chance();
+        }
+        else {
+            population.cross_population_random(cross_percent);
+        }
+        if (report) std::cout << "Population: " << population.size() << std::endl;
 
         if (report) std::cout << "Mutating...\n";
         if (mutate_mode == 0) {
@@ -64,7 +72,7 @@ std::vector<size_t> GeneticAlgo::find_path(MapData& data, size_t population_size
         if (report) std::cout << "Population: " << population.size() << std::endl;
 
         if (report) std::cout << "Selecting...\n";
-        if (mutate_mode == 0) {
+        if (select_mode == 0) {
             population.update_population_chance();
             population.select_population_chance(preserve_best, preserve_worst);
         }

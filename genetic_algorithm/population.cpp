@@ -8,8 +8,8 @@ void Population::add_gene(const Gene& gene) {
 }
 
 
-Population::Population(size_t set_size, size_t set_range, MapData& data) :
-        max_size(set_size), range(set_range), population(max_size, data) {}
+Population::Population(size_t set_size, const Data* data) :
+        max_size(set_size), range(data->get_range()), population(max_size, data) {}
 
 
 size_t Population::size() {
@@ -52,7 +52,7 @@ void Population::cross_population_chance() {
             if (!parent2.selected()) {
                 continue;
             }
-            const auto& children = cross(parent1, parent2);
+            const auto& children = cross_one_point(parent1, parent2);
             add_gene(children.first);
             add_gene(children.second);
             break;
@@ -70,7 +70,7 @@ void Population::cross_population_random(double cross_percent) {
         if (parent1.size() <= 1 && parent2.size() <= 1) {
             continue;
         }
-        const auto& children = cross(parent1, parent2);
+        const auto& children = cross_one_point(parent1, parent2);
         add_gene(children.first);
         add_gene(children.second);
     }
@@ -81,14 +81,19 @@ void Population::mutate_population_chance() {
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size; ++i) {
         Gene src = population[i];
-        if (src.size() < 2) {
+        if (src.size() == 0) {
             continue;
         }
         if (!src.selected()) {
             continue;
         }
-        const auto& mutants = mutate(src);
-        add_gene(std::max(std::max(mutants[0], mutants[1]), mutants[2]));
+        if (src.size() < 4) {
+            add_gene(mutate_one_point(src, range));
+        }
+        else {
+            const auto& mutants = mutate_triple(src);
+            add_gene(*std::max_element(mutants.begin(), mutants.end()));
+        }
     }
 }
 
@@ -98,11 +103,16 @@ void Population::mutate_population_random(double mutate_percent) {
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * mutate_percent; ++i) {
         Gene src = population[r() % population_size];
-        if (src.size() < 2) {
+        if (src.size() == 0) {
             continue;
         }
-        const auto& mutants = mutate(src);
-        add_gene(std::max(std::max(mutants[0], mutants[1]), mutants[2]));
+        if (src.size() < 4) {
+            add_gene(mutate_one_point(src, range));
+        }
+        else {
+            const auto& mutants = mutate_triple(src);
+            add_gene(*std::max_element(mutants.begin(), mutants.end()));
+        }
     }
 }
 

@@ -20,23 +20,23 @@ int main()
         MapData data (obstacles, start, end);
         GeneticAlgo pathfinder;
 
-        size_t population_size = 70;
+        size_t population_size = 30;
         size_t epoch_number = 300;
         size_t valueless_epoch_number = 15;
         size_t preserve_best = 3;
         size_t preserve_worst = 3;
         double cross_percent = 0.5;
         double mutate_percent = 0.5;
-        int cross_mode = 1;
-        int mutate_mode = 1;
+        int cross_mode = 0;
+        int mutate_mode = 0;
         int select_mode = 0;
 
-        const auto& path = pathfinder.find_path(data, population_size, data.pts.size(), epoch_number,
+        const auto& path_index = pathfinder.find_path(&data, population_size, epoch_number,
                 valueless_epoch_number, preserve_best, preserve_worst,
                 cross_mode, mutate_mode, select_mode, cross_percent, mutate_percent, true);
         cout << "Path found: " << start << " -> ";
-        for (const auto& point : path) {
-            cout << point << " -> ";
+        for (const auto& point : path_index) {
+            cout << data.pts[point] << " -> ";
         }
         cout << end << endl;
     }

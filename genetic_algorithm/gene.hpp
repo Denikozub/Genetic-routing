@@ -5,7 +5,7 @@
 #include <vector>
 
 class Gene {
-    MapData& data;
+    const Data* data;
     size_t len;
     std::vector<size_t> gene;
     double fitness_value, chance;
@@ -13,22 +13,19 @@ class Gene {
     void inverse(size_t, size_t);
     void insert(size_t, size_t);
     void swap(size_t, size_t);
+    void cut_fill(size_t, size_t, const Gene&);
 public:
-    Gene(MapData&);
+    Gene(const Data*);
     double size() const;
     void init(size_t);
     double get_fitness_value() const;
     void update_chance(double);
     bool selected();
     bool survived() const;
-    double fitness();
-    friend std::pair<Gene, Gene> cross(const Gene&, const Gene&);
-    friend std::vector<Gene> mutate(const Gene&);
-    friend bool operator>= (const Gene&, const Gene&);
-    friend bool operator<= (const Gene&, const Gene&);
-    friend bool operator> (const Gene&, const Gene&);
+    friend std::pair<Gene, Gene> cross_one_point(const Gene&, const Gene&);
+    friend std::vector<Gene> mutate_triple(const Gene&);
+    friend Gene mutate_one_point(const Gene&, size_t);
     friend bool operator< (const Gene&, const Gene&);
-    Gene& operator= (const Gene&);
     const std::vector<size_t>& get_gene();
 };
 
