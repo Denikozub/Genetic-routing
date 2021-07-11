@@ -12,7 +12,7 @@ Population::Population(size_t set_size, const Data* data) :
         max_size(set_size), range(data->get_range()), population(max_size, data) {}
 
 
-size_t Population::size() {
+size_t Population::size() const {
     return population.size();
 }
 

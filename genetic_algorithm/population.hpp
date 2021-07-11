@@ -11,7 +11,7 @@ class Population {
     void add_gene(const Gene&);
 public:
     Population(size_t, const Data*);
-    size_t size();
+    size_t size() const;
     void init_population();
     void update_population_chance();
     void cross_population_chance();
