@@ -12,14 +12,11 @@ class Population {
 public:
     Population(size_t, const Data*);
     size_t size() const;
-    void init_population();
-    void update_population_chance();
-    void cross_population_chance();
-    void cross_population_random(double);
-    void mutate_population_chance();
-    void mutate_population_random(double);
-    void select_population_chance(size_t, size_t);
-    void select_population_best(size_t, size_t);
+    void init();
+    void update_chance();
+    void cross(double);
+    void mutate(double);
+    void select(size_t, size_t);
     double best_value() const;
     const std::vector<size_t>& best_gene() const;
 };

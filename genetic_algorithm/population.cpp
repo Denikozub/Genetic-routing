@@ -17,7 +17,7 @@ size_t Population::size() const {
 }
 
 
-void Population::init_population() {
+void Population::init() {
     for (auto& g : population) {
         g.init(range);
     }
@@ -25,7 +25,7 @@ void Population::init_population() {
 }
 
 
-void Population::update_population_chance() {
+void Population::update_chance() {
     double average = 0;
     for (const auto& g : population) {
         average += g.get_fitness_value();
@@ -37,36 +37,23 @@ void Population::update_population_chance() {
 }
 
 
-void Population::cross_population_chance() {
-    size_t population_size = population.size();
-    for (size_t i = 0; i < population_size; ++i) {
-        Gene parent1 = population[i];
-        if (!parent1.selected()) {
-            continue;
-        }
-        for (size_t j = i + 1; j < population_size; ++j) {
-            Gene parent2 = population[j];
-            if (parent1.size() <= 1 && parent2.size() <= 1) {
-                continue;
-            }
-            if (!parent2.selected()) {
-                continue;
-            }
-            const auto& children = cross_one_point(parent1, parent2);
-            add_gene(children.first);
-            add_gene(children.second);
-            break;
-        }
-    }
-}
-
-
-void Population::cross_population_random(double cross_percent) {
+void Population::cross(double cross_percent) {
     std::random_device r;
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * cross_percent / 2; ++i) {
-        Gene parent1 = population[r() % population_size];
-        Gene parent2 = population[r() % population_size];
+        Gene parent1(nullptr), parent2(nullptr);
+        size_t parent1_index, parent2_index;
+        do {
+            parent1_index = r() % population_size;
+            parent1 = population[parent1_index];
+        } while (!parent1.selected());
+        do {
+            do {
+                parent2_index = r() % population_size;
+            } while (parent2_index == parent1_index);
+            parent2 = population[parent2_index];
+        } while (!parent2.selected());
+
         if (parent1.size() <= 1 && parent2.size() <= 1) {
             continue;
         }
@@ -77,72 +64,48 @@ void Population::cross_population_random(double cross_percent) {
 }
 
 
-void Population::mutate_population_chance() {
-    size_t population_size = population.size();
-    for (size_t i = 0; i < population_size; ++i) {
-        Gene src = population[i];
-        if (src.size() == 0) {
-            continue;
-        }
-        if (!src.selected()) {
-            continue;
-        }
-        if (src.size() < 4) {
-            add_gene(mutate_one_point(src, range));
-        }
-        else {
-            const auto& mutants = mutate_triple(src);
-            add_gene(*std::max_element(mutants.begin(), mutants.end()));
-        }
-    }
-}
-
-
-void Population::mutate_population_random(double mutate_percent) {
+void Population::mutate(double mutate_percent) {
     std::random_device r;
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * mutate_percent; ++i) {
-        Gene src = population[r() % population_size];
-        if (src.size() == 0) {
+        Gene gene(nullptr);
+        do {
+            gene = population[r() % population_size];
+        } while (!gene.selected());
+        if (gene.size() == 0) {
             continue;
         }
-        if (src.size() < 4) {
-            add_gene(mutate_one_point(src, range));
+        if (gene.size() < 4) {
+            add_gene(mutate_one_point(gene, range));
         }
         else {
-            const auto& mutants = mutate_triple(src);
+            const auto& mutants = mutate_triple(gene);
             add_gene(*std::max_element(mutants.begin(), mutants.end()));
         }
     }
 }
 
 
-void Population::select_population_chance(size_t preserve_best, size_t preserve_worst) {
+void Population::select(size_t preserve_best, size_t preserve_worst) {
     size_t current_size = population.size();
     if (current_size == max_size) {
         return;
     }
     size_t killed = 0;
     while (killed < current_size - max_size) {
-        for (auto it = population.begin() + preserve_best; it != population.end() - preserve_worst;) {
+        for (auto it = population.end() - preserve_worst - 1; it != population.begin() + preserve_best - 1;) {
             if ((*it).survived()) {
-                ++it;
+                --it;
                 continue;
             }
             it = population.erase(it);
+            --it;
             ++killed;
             if (killed == current_size - max_size) {
                 return;
             }
         }
     }
-}
-
-
-void Population::select_population_best(size_t preserve_best, size_t preserve_worst) {
-    std::vector<Gene> best = { population.begin(), population.begin() + max_size - preserve_worst };
-    best.insert(best.end(), population.end() - preserve_worst, population.end());
-    population = best;
 }
 
 

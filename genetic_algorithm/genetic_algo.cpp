@@ -7,8 +7,7 @@
 
 std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_size,
         size_t epoch_number, size_t valueless_epoch_number, size_t preserve_best,
-        size_t preserve_worst, int cross_mode, int mutate_mode, int select_mode,
-        double cross_percent, double mutate_percent, bool report) const {
+        size_t preserve_worst, double cross_percent, double mutate_percent, bool report) const {
 
     if (population_size <= 0) {
         throw std::invalid_argument("Wrong population size");
@@ -31,18 +30,9 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
     if (mutate_percent <= 0) {
         throw std::invalid_argument("Wrong mutate percent");
     }
-    if (cross_mode < 0 || cross_mode > 1) {
-        throw std::invalid_argument("Wrong cross mode percent");
-    }
-    if (mutate_mode < 0 || mutate_mode > 1) {
-        throw std::invalid_argument("Wrong mutate mode percent");
-    }
-    if (select_mode < 0 || select_mode > 1) {
-        throw std::invalid_argument("Wrong select mode percent");
-    }
 
     Population population(population_size, data);
-    population.init_population();
+    population.init();
 
     double last_fitness_value = 0;
     size_t valueless_epochs = 0;
@@ -50,33 +40,18 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
         if (report) std::cout << "==================== Iteration " << i + 1 << " ====================\n";
         
         if (report) std::cout << "Crossing...\n";
-        if (cross_mode == 0) {
-            population.update_population_chance();
-            population.cross_population_chance();
-        }
-        else {
-            population.cross_population_random(cross_percent);
-        }
+        population.update_chance();
+        population.cross(cross_percent);
         if (report) std::cout << "Population: " << population.size() << std::endl;
 
         if (report) std::cout << "Mutating...\n";
-        if (mutate_mode == 0) {
-            population.update_population_chance();
-            population.mutate_population_chance();
-        }
-        else {
-            population.mutate_population_random(mutate_percent);
-        }
+        population.update_chance();
+        population.mutate(mutate_percent);
         if (report) std::cout << "Population: " << population.size() << std::endl;
 
         if (report) std::cout << "Selecting...\n";
-        if (select_mode == 0) {
-            population.update_population_chance();
-            population.select_population_chance(preserve_best, preserve_worst);
-        }
-        else {
-            population.select_population_best(preserve_best, preserve_worst);
-        }
+        population.update_chance();
+        population.select(preserve_best, preserve_worst);
         if (report) std::cout << "Population: " << population.size() << std::endl;
 
         double curr_fitness_value = population.best_value();
