@@ -5,9 +5,9 @@
 #include <cmath>
 
 
-std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_size,
-        size_t epoch_number, size_t valueless_epoch_number, size_t preserve_best,
-        size_t preserve_worst, double cross_percent, double mutate_percent, bool report) const {
+std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_size, size_t epoch_number,
+        size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst, size_t remove_duplicates,
+        double cross_percent, double mutate_percent, bool report) const {
 
     if (population_size <= 0) {
         throw std::invalid_argument("Wrong population size");
@@ -27,17 +27,22 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
     if (cross_percent < 0) {
         throw std::invalid_argument("Wrong cross percent");
     }
-    if (mutate_percent <= 0) {
+    if (mutate_percent < 0) {
         throw std::invalid_argument("Wrong mutate percent");
     }
 
     Population population(population_size, data);
-    population.init();
+    population.fill();
 
     double last_fitness_value = 0;
     size_t valueless_epochs = 0;
     for (size_t i = 0; i < epoch_number; ++i) {
         if (report) std::cout << "==================== Iteration " << i + 1 << " ====================\n";
+
+        if (i % remove_duplicates == 0) {
+            if (report) std::cout << "Removing duplicates...\n";
+            population.remove_duplicates();
+        }
         
         if (report) std::cout << "Crossing...\n";
         population.update_chance();
@@ -76,6 +81,8 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
     if ((report && valueless_epoch_number == 0) || (valueless_epochs != valueless_epoch_number)) {
         std::cout << "Max epoch number reached\n\n";
     }
+
+    if (report) std::cout << "Final population:\n" << population << std::endl;
 
     return population.best_gene();
 }

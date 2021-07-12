@@ -8,6 +8,7 @@
 void Gene::remove_duplicates() {
     std::unordered_set<size_t> s(gene.begin(), gene.end());
     gene.assign(s.begin(), s.end());
+    len = gene.size();
 }
 
 
@@ -44,7 +45,6 @@ void Gene::cut_fill(size_t cut1, size_t cut2, const Gene& parent) {
     gene = { gene.begin(), gene.begin() + cut1 };
     gene.insert(gene.end(), parent.gene.begin() + cut2, parent.gene.end());
     remove_duplicates();
-    len = gene.size();
     fitness_value = data->fitness(gene);
 }
 
@@ -63,7 +63,6 @@ void Gene::init(size_t range) {
     gene = std::vector<size_t>(len);
     std::generate(gene.begin(), gene.end(), [&] {return r() % range; });
     remove_duplicates();
-    len = gene.size();
     fitness_value = data->fitness(gene);
 }
 
@@ -137,17 +136,20 @@ std::vector<Gene> mutate_triple(const Gene& src) {
 }
 
 
-Gene mutate_one_point(const Gene& src, size_t point_number) {
+std::vector<Gene> mutate_one_point(const Gene& src, size_t point_number) {
     if (src.len == 0) {
         throw std::invalid_argument("Gene cannot be empty");
     }
+    Gene mutant1(src), mutant2(src), mutant3(src);
     std::random_device r;
-    size_t point_mutate = r() % src.len;
-    Gene mutant(src);
-    mutant.gene[point_mutate] = r() % point_number;
-    mutant.remove_duplicates();
-    mutant.len = mutant.gene.size();
-    return mutant;
+    size_t i = r() % src.len;
+    mutant1.gene[i] = r() % point_number;
+    mutant1.remove_duplicates();
+    mutant2.gene.insert(mutant2.gene.begin() + i, r() % point_number);
+    mutant2.remove_duplicates();
+    mutant3.gene.erase(mutant3.gene.begin() + i);
+    mutant3.len = mutant3.gene.size();
+    return { mutant1, mutant2, mutant3 };
 }
 
 
@@ -156,6 +158,20 @@ bool operator< (const Gene& gene1, const Gene& gene2) {
 }
 
 
+bool operator== (const Gene& gene1, const Gene& gene2) {
+    return gene1.gene == gene2.gene;
+}
+
+
 const std::vector<size_t>& Gene::get_gene() const {
     return gene;
+}
+
+
+std::ostream& operator<< (std::ostream& out, const Gene& gene) {
+    for (size_t point : gene.gene) {
+        out << point << " ";
+    }
+    out << std::endl;
+    return out;
 }

@@ -1,6 +1,7 @@
 #include "population.hpp"
 #include <algorithm>
 #include <random>
+#include <unordered_set>
 
 
 void Population::add_gene(const Gene& gene) {
@@ -8,8 +9,8 @@ void Population::add_gene(const Gene& gene) {
 }
 
 
-Population::Population(size_t set_size, const Data* data) :
-        max_size(set_size), range(data->get_range()), population(max_size, data) {}
+Population::Population(size_t set_size, const Data* set_data) :
+        data(set_data), max_size(set_size), range(set_data->get_range()) {}
 
 
 size_t Population::size() const {
@@ -17,9 +18,12 @@ size_t Population::size() const {
 }
 
 
-void Population::init() {
-    for (auto& g : population) {
+void Population::fill() {
+    size_t curr_size = population.size();
+    for (size_t i = 0; i < max_size - curr_size; ++i) {
+        Gene g(data);
         g.init(range);
+        population.push_back(g);
     }
     std::sort(population.begin(), population.end());
 }
@@ -34,6 +38,13 @@ void Population::update_chance() {
     for (auto& g : population) {
         g.update_chance(average);
     }
+}
+
+
+void Population::remove_duplicates() {
+    std::unordered_set<Gene> s(population.begin(), population.end());
+    population.assign(s.begin(), s.end());
+    fill();
 }
 
 
@@ -75,8 +86,9 @@ void Population::mutate(double mutate_percent) {
         if (gene.size() == 0) {
             continue;
         }
-        if (gene.size() < 4) {
-            add_gene(mutate_one_point(gene, range));
+        if (gene.size() < 8) {
+            const auto& mutants = mutate_one_point(gene, range);
+            add_gene(*std::max_element(mutants.begin(), mutants.end()));
         }
         else {
             const auto& mutants = mutate_triple(gene);
@@ -116,4 +128,12 @@ double Population::best_value() const {
 
 const std::vector<size_t>& Population::best_gene() const {
     return population[0].get_gene();
+}
+
+
+std::ostream& operator<< (std::ostream& out, const Population& population) {
+    for (const Gene& gene : population.population) {
+        out << gene << " ";
+    }
+    return out;
 }
