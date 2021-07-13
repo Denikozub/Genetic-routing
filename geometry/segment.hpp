@@ -1,3 +1,11 @@
+/*
+Segment class:
+constuctor takes Point and Point
+crosses template method works with Polygon and Segment
+currently only convex polygons are 
+second parameter defines if touches and overlays are considered as an intersection
+*/
+
 #ifndef SEGMENT_HPP
 #define SEGMENT_HPP
 

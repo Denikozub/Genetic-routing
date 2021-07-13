@@ -1,3 +1,9 @@
+/*
+Polygon class:
+constructor takes vector of Point
+can be iterated over segments
+*/
+
 #ifndef POLYGON_HPP
 #define POLYGON_HPP
 
@@ -22,6 +28,7 @@ public:
     const std::vector<Point>& geometry() const;
     Iterator begin() const;
     Iterator end() const;
+    bool contains(const Point&) const;
     friend std::ostream& operator<< (std::ostream&, const Polygon&);
 };
 

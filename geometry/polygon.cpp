@@ -58,6 +58,16 @@ Iterator Polygon::end() const {
 }
 
 
+bool Polygon::contains(const Point& point) const {
+    for (const Point& p : pts) {
+        if (p == point) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 std::ostream& operator<< (std::ostream& out, const Polygon& polygon) {
     out << "{ ";
     if (polygon.pts.size() >= 1) {
