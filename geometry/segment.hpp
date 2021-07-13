@@ -1,7 +1,7 @@
 /*
 Segment class:
-- constuctor takes Point and Point
-- crosses template method works with Polygon and Segment
+- constuctor takes 2 Point objects
+- bool crosses(const T&) template method works with Polygon and Segment objects
 - touches and overlays are NOT considered as intersections
 - TODO: currently segment intersecting a polygon overlapping
   its diagonal does not count as an intersection

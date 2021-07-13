@@ -5,7 +5,7 @@
 #include <cmath>
 
 
-std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_size, size_t epoch_number,
+std::vector<size_t> GeneticAlgo::solve(const Data* data, size_t population_size, size_t epoch_number,
         size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst, size_t remove_duplicates,
         double cross_percent, double mutate_percent, bool report) const {
 

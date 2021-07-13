@@ -1,7 +1,8 @@
 /*
 Polygon class:
-constructor takes vector of Point
-can be iterated over segments
+- constructor takes vector of Point objects
+- first and last elements of vector must be equal
+- can be const-iterated over segments (returning Segment object)
 */
 
 #ifndef POLYGON_HPP

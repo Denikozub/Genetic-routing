@@ -29,7 +29,7 @@ int main()
         double cross_percent = 1;
         double mutate_percent = 0.2;
 
-        const auto& path = pathfinder.find_path(&data, population_size, epoch_number, valueless_epoch_number,
+        const auto& path = pathfinder.solve(&data, population_size, epoch_number, valueless_epoch_number,
             preserve_best, preserve_worst, remove_duplicates, cross_percent, mutate_percent, true);
         cout << "Path found: " << start << " -> ";
         for (const auto& point : path) {

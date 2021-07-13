@@ -1,6 +1,6 @@
 /*
 Point class
-- constructor takes x, y coordinates
+- constructor takes a pair of double x, y coordinates
 - comparison done with 1e-8 precision
 */
 

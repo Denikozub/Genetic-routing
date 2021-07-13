@@ -1,3 +1,19 @@
+/*
+Population class:
+- constructor takes max number of genes in population and
+  a pointer to Data object for a particular task
+- size_t size() const: return current size of population
+- void fill(): fill population up to max number of genes
+- void update_chance(): update chance values of all genes
+- void remove_duplicates(): remove duplicates
+- void cross(double cross_percent): perform crossing on a given percent of genes
+- void mutate(double mutate_percent): perform mutation on a given percent of genes
+- void select(size_t preserve_best, size_t preserve_worst):
+  perform selection preserving best and worst genes
+- double best_value() const: return fitness value of best gene
+- const std::vector<size_t>& best_gene() const: return best gene
+*/
+
 #ifndef POPULATION_HPP
 #define POPULATION_HPP
 
