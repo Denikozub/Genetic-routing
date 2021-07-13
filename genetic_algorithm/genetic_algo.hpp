@@ -13,6 +13,15 @@ parameters:
 - double mutate_percent: number of genes mutated
 - bool report = false: whether to print info about each iteration
 returns: best gene
+structure of the algorithm:
+1) initialize population
+2) FOR epoch_number:
+3)     selection
+4)     remove duplicates
+5)     fill population up to population_size
+6)     crossing
+7)     mutation
+8)     check if valueless_epoch_number reached
 */
 
 #ifndef GENETIC_ALGO_HPP

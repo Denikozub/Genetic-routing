@@ -1,3 +1,10 @@
+/*
+Vector class
+- constuctor takes 2 Point objects
+- double len(): return length of vector
+- double cross_prod(const Vector&, const Vector&): return cross product of 2 vectors
+*/
+
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
