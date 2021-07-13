@@ -9,17 +9,11 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
         size_t valueless_epoch_number, size_t preserve_best, size_t preserve_worst, size_t remove_duplicates,
         double cross_percent, double mutate_percent, bool report) const {
 
-    if (population_size <= 0) {
+    if (population_size == 0) {
         throw std::invalid_argument("Wrong population size");
     }
-    if (epoch_number <= 0) {
+    if (epoch_number == 0) {
         throw std::invalid_argument("Wrong epoch number");
-    }
-    if (preserve_best <= 0 || preserve_best > population_size) {
-        throw std::invalid_argument("Wrong preserve_best number");
-    }
-    if (preserve_worst > population_size) {
-        throw std::invalid_argument("Wrong preserve_worst number");
     }
     if (preserve_best + preserve_worst > population_size) {
         throw std::invalid_argument("Wrong preserve_best & preserve_worst ratio");

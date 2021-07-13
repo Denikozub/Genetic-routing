@@ -1,5 +1,6 @@
 #include "population.hpp"
 #include <algorithm>
+#include <stdexcept>
 #include <random>
 
 
@@ -9,7 +10,11 @@ void Population::add_gene(const Gene& gene) {
 
 
 Population::Population(size_t set_size, const Data* set_data) :
-        data(set_data), max_size(set_size), range(set_data->get_range()) {}
+        data(set_data), max_size(set_size), range(set_data->get_range()) {
+    if (range == 0) {
+        throw std::logic_error("Range cannot be zero");
+    }
+}
 
 
 size_t Population::size() const {
@@ -48,6 +53,9 @@ void Population::remove_duplicates() {
 
 
 void Population::cross(double cross_percent) {
+    if (cross_percent < 0) {
+        throw std::invalid_argument("Wrong cross percent");
+    }
     std::random_device r;
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * cross_percent / 2; ++i) {
@@ -76,6 +84,9 @@ void Population::cross(double cross_percent) {
 
 
 void Population::mutate(double mutate_percent) {
+    if (mutate_percent < 0) {
+        throw std::invalid_argument("Wrong mutate percent");
+    }
     std::random_device r;
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * mutate_percent; ++i) {
@@ -99,6 +110,9 @@ void Population::mutate(double mutate_percent) {
 
 
 void Population::select(size_t preserve_best, size_t preserve_worst) {
+    if (preserve_best + preserve_worst > max_size) {
+        throw std::invalid_argument("Wrong preserve_best & preserve_worst ratio");
+    }
     size_t current_size = population.size();
     if (current_size <= max_size) {
         return;
