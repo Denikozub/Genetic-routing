@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <unordered_set>
+#include <cmath>
 
 
 void Gene::remove_duplicates() {
@@ -159,7 +160,8 @@ bool operator< (const Gene& gene1, const Gene& gene2) {
 
 
 bool operator== (const Gene& gene1, const Gene& gene2) {
-    return gene1.fitness_value == gene2.fitness_value;
+    double epsilon = 1e-8;
+    return std::fabs(gene1.fitness_value - gene2.fitness_value) < epsilon;
 }
 
 
