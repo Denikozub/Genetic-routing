@@ -22,10 +22,10 @@ int main()
 
         size_t population_size = 100;
         size_t epoch_number = 300;
-        size_t valueless_epoch_number = 150;
+        size_t valueless_epoch_number = 100;
         size_t preserve_best = 5;
         size_t preserve_worst = 5;
-        size_t remove_duplicates = 10;
+        size_t remove_duplicates = 5;
         double cross_percent = 1;
         double mutate_percent = 0.2;
 

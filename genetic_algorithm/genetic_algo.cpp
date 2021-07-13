@@ -38,12 +38,23 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
     size_t valueless_epochs = 0;
     for (size_t i = 0; i < epoch_number; ++i) {
         if (report) std::cout << "==================== Iteration " << i + 1 << " ====================\n";
+        
+        if (report) std::cout << "Selecting...\n";
+        population.update_chance();
+        population.select(preserve_best, preserve_worst);
+        if (report) std::cout << "Population: " << population.size() << std::endl;
 
-        if (i % remove_duplicates == 0) {
+        if ((i + 1) % remove_duplicates == 0) {
             if (report) std::cout << "Removing duplicates...\n";
             population.remove_duplicates();
+            if (report) std::cout << "Population: " << population.size() << std::endl;
         }
-        
+
+        if ((i + 1) % remove_duplicates == 0) {
+            if (report) std::cout << "Filling...\n";
+            population.fill();
+        }
+
         if (report) std::cout << "Crossing...\n";
         population.update_chance();
         population.cross(cross_percent);
@@ -52,11 +63,6 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
         if (report) std::cout << "Mutating...\n";
         population.update_chance();
         population.mutate(mutate_percent);
-        if (report) std::cout << "Population: " << population.size() << std::endl;
-
-        if (report) std::cout << "Selecting...\n";
-        population.update_chance();
-        population.select(preserve_best, preserve_worst);
         if (report) std::cout << "Population: " << population.size() << std::endl;
 
         double curr_fitness_value = population.best_value();
@@ -81,8 +87,6 @@ std::vector<size_t> GeneticAlgo::find_path(const Data* data, size_t population_s
     if ((report && valueless_epoch_number == 0) || (valueless_epochs != valueless_epoch_number)) {
         std::cout << "Max epoch number reached\n\n";
     }
-
-    if (report) std::cout << "Final population:\n" << population << std::endl;
 
     return population.best_gene();
 }

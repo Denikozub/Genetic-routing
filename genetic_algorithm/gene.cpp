@@ -159,7 +159,7 @@ bool operator< (const Gene& gene1, const Gene& gene2) {
 
 
 bool operator== (const Gene& gene1, const Gene& gene2) {
-    return gene1.gene == gene2.gene;
+    return gene1.fitness_value == gene2.fitness_value;
 }
 
 

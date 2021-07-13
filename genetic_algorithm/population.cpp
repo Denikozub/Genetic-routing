@@ -1,7 +1,6 @@
 #include "population.hpp"
 #include <algorithm>
 #include <random>
-#include <unordered_set>
 
 
 void Population::add_gene(const Gene& gene) {
@@ -20,12 +19,14 @@ size_t Population::size() const {
 
 void Population::fill() {
     size_t curr_size = population.size();
-    for (size_t i = 0; i < max_size - curr_size; ++i) {
-        Gene g(data);
-        g.init(range);
-        population.push_back(g);
+    if (curr_size >= max_size) {
+        return;
     }
-    std::sort(population.begin(), population.end());
+    for (size_t i = 0; i < max_size - curr_size; ++i) {
+        Gene gene(data);
+        gene.init(range);
+        add_gene(gene);
+    }
 }
 
 
@@ -42,9 +43,7 @@ void Population::update_chance() {
 
 
 void Population::remove_duplicates() {
-    std::unordered_set<Gene> s(population.begin(), population.end());
-    population.assign(s.begin(), s.end());
-    fill();
+    population.erase(std::unique(population.begin(), population.end()), population.end());
 }
 
 
@@ -52,10 +51,11 @@ void Population::cross(double cross_percent) {
     std::random_device r;
     size_t population_size = population.size();
     for (size_t i = 0; i < population_size * cross_percent / 2; ++i) {
+        size_t elite = population_size * cross_percent / 8;
         Gene parent1(nullptr), parent2(nullptr);
         size_t parent1_index, parent2_index;
         do {
-            parent1_index = r() % population_size;
+            parent1_index = i <= elite ? i : r() % population_size;
             parent1 = population[parent1_index];
         } while (!parent1.selected());
         do {
@@ -81,7 +81,7 @@ void Population::mutate(double mutate_percent) {
     for (size_t i = 0; i < population_size * mutate_percent; ++i) {
         Gene gene(nullptr);
         do {
-            gene = population[r() % population_size];
+            gene = i <= population_size * mutate_percent / 4 ? population[i] : population[r() % population_size];
         } while (!gene.selected());
         if (gene.size() == 0) {
             continue;
@@ -100,7 +100,7 @@ void Population::mutate(double mutate_percent) {
 
 void Population::select(size_t preserve_best, size_t preserve_worst) {
     size_t current_size = population.size();
-    if (current_size == max_size) {
+    if (current_size <= max_size) {
         return;
     }
     size_t killed = 0;

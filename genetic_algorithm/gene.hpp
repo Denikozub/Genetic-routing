@@ -32,25 +32,4 @@ public:
     friend std::ostream& operator<< (std::ostream&, const Gene&);
 };
 
-namespace std {
-    template <> struct hash<vector<size_t>>
-    {
-        size_t operator()(const vector<size_t>& vec) const
-        {
-            size_t seed = vec.size();
-            for (auto& i : vec) {
-                seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            }
-            return seed;
-        }
-    };
-    template <> struct hash<Gene>
-    {
-        size_t operator()(const Gene& x) const
-        {
-            return hash<vector<size_t>>()(x.get_gene());
-        }
-    };
-}
-
 #endif
