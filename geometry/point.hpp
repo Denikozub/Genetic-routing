@@ -1,3 +1,9 @@
+/*
+Point class
+- constructor takes x, y coordinates
+- comparison done with 1e-8 precision
+*/
+
 #ifndef POINT_HPP
 #define POINT_HPP
 
