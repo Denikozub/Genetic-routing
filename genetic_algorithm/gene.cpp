@@ -50,6 +50,43 @@ void Gene::cut_fill(size_t cut1, size_t cut2, const Gene& parent) {
 }
 
 
+Gene Gene::mutate_triple() {
+    if (len < 2) {
+        throw std::invalid_argument("Gene cannot be mutated");
+    }
+    Gene mutant1(*this), mutant2(*this), mutant3(*this);
+    std::random_device r;
+    size_t i = r() % len, j = r() % len;
+    while (i == j) {
+        j = r() % len;
+    }
+    if (i > j) {
+        ::std::swap(i, j);
+    }
+    mutant1.inverse(i, j);
+    mutant2.insert(i, j);
+    mutant3.swap(i, j);
+    return std::max(mutant1, std::max(mutant2, mutant3));
+}
+
+
+Gene Gene::mutate_one_point(size_t point_number) {
+    if (len == 0) {
+        throw std::invalid_argument("Gene cannot be empty");
+    }
+    Gene mutant1(*this), mutant2(*this), mutant3(*this);
+    std::random_device r;
+    size_t i = r() % len;
+    mutant1.gene[i] = r() % point_number;
+    mutant1.remove_duplicates();
+    mutant2.gene.insert(mutant2.gene.begin() + i, r() % point_number);
+    mutant2.remove_duplicates();
+    mutant3.gene.erase(mutant3.gene.begin() + i);
+    mutant3.len = mutant3.gene.size();
+    return std::max(mutant1, std::max(mutant2, mutant3));
+}
+
+
 Gene::Gene(const Data* set_data) : data(set_data), len(0), fitness_value(0), chance(0) {}
 
 
@@ -70,6 +107,11 @@ void Gene::init(size_t range) {
 
 double Gene::get_fitness_value() const {
     return fitness_value;
+}
+
+
+const std::vector<size_t>& Gene::get_gene() const {
+    return gene;
 }
 
 
@@ -103,54 +145,22 @@ bool Gene::survived() const {
 }
 
 
-std::pair<Gene, Gene> cross_one_point(const Gene& parent1, const Gene& parent2) {
-    if (parent1.len <= 1 && parent2.len <= 1) {
+std::pair<Gene, Gene> Gene::cross(const Gene& partner) {
+    if (len <= 1 && partner.len <= 1) {
         throw std::invalid_argument("At least one of the parents should have 2 or more points");
     }
     std::random_device r;
-    size_t parent1_cross = parent1.len > 1 ? r() % (parent1.len - 1) + 1 : 0;
-    size_t parent2_cross = parent2.len > 1 ? r() % (parent2.len - 1) + 1 : 0;
-    Gene child1(parent1), child2(parent2);
-    child1.cut_fill(parent1_cross, parent2_cross, parent2);
-    child2.cut_fill(parent2_cross, parent1_cross, parent1);
+    size_t parent1_cross = len > 1 ? r() % (len - 1) + 1 : 0;
+    size_t parent2_cross = partner.len > 1 ? r() % (partner.len - 1) + 1 : 0;
+    Gene child1(*this), child2(partner);
+    child1.cut_fill(parent1_cross, parent2_cross, partner);
+    child2.cut_fill(parent2_cross, parent1_cross, *this);
     return { child1, child2 };
 }
 
 
-std::vector<Gene> mutate_triple(const Gene& src) {
-    if (src.len < 2) {
-        throw std::invalid_argument("Gene cannot be mutated");
-    }
-    Gene mutant1(src), mutant2(src), mutant3(src);
-    std::random_device r;
-    size_t i = r() % src.len, j = r() % src.len;
-    while (i == j) {
-        j = r() % src.len;
-    }
-    if (i > j) {
-        ::std::swap(i, j);
-    }
-    mutant1.inverse(i, j);
-    mutant2.insert(i, j);
-    mutant3.swap(i, j);
-    return { mutant1, mutant2, mutant3 };
-}
-
-
-std::vector<Gene> mutate_one_point(const Gene& src, size_t point_number) {
-    if (src.len == 0) {
-        throw std::invalid_argument("Gene cannot be empty");
-    }
-    Gene mutant1(src), mutant2(src), mutant3(src);
-    std::random_device r;
-    size_t i = r() % src.len;
-    mutant1.gene[i] = r() % point_number;
-    mutant1.remove_duplicates();
-    mutant2.gene.insert(mutant2.gene.begin() + i, r() % point_number);
-    mutant2.remove_duplicates();
-    mutant3.gene.erase(mutant3.gene.begin() + i);
-    mutant3.len = mutant3.gene.size();
-    return { mutant1, mutant2, mutant3 };
+Gene Gene::mutate(size_t point_number) {
+    return len < 6 ? mutate_one_point(point_number) : mutate_triple();
 }
 
 
@@ -162,11 +172,6 @@ bool operator< (const Gene& gene1, const Gene& gene2) {
 bool operator== (const Gene& gene1, const Gene& gene2) {
     double epsilon = 1e-8;
     return std::fabs(gene1.fitness_value - gene2.fitness_value) < epsilon;
-}
-
-
-const std::vector<size_t>& Gene::get_gene() const {
-    return gene;
 }
 
 

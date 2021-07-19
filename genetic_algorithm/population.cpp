@@ -76,7 +76,7 @@ void Population::cross(double cross_percent) {
         if (parent1.size() <= 1 && parent2.size() <= 1) {
             continue;
         }
-        const auto& children = cross_one_point(parent1, parent2);
+        const auto& children = parent1.cross(parent2);
         add_gene(children.first);
         add_gene(children.second);
     }
@@ -97,14 +97,7 @@ void Population::mutate(double mutate_percent) {
         if (gene.size() == 0) {
             continue;
         }
-        if (gene.size() < 8) {
-            const auto& mutants = mutate_one_point(gene, range);
-            add_gene(*std::max_element(mutants.begin(), mutants.end()));
-        }
-        else {
-            const auto& mutants = mutate_triple(gene);
-            add_gene(*std::max_element(mutants.begin(), mutants.end()));
-        }
+        add_gene(gene.mutate(range));
     }
 }
 
