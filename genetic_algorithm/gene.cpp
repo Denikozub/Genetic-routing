@@ -50,7 +50,7 @@ void Gene::cut_fill(size_t cut1, size_t cut2, const Gene& parent) {
 }
 
 
-Gene Gene::mutate_triple() {
+Gene Gene::mutate_hybrid() {
     if (len < 2) {
         throw std::invalid_argument("Gene cannot be mutated");
     }
@@ -160,7 +160,7 @@ std::pair<Gene, Gene> Gene::cross(const Gene& partner) {
 
 
 Gene Gene::mutate(size_t point_number) {
-    return len < 6 ? mutate_one_point(point_number) : mutate_triple();
+    return len < 6 ? mutate_one_point(point_number) : mutate_hybrid();
 }
 
 

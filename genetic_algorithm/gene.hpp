@@ -12,7 +12,7 @@ Gene class - work with genes of variable length
   formula survive_chance = chance / (chance + 1) makes it easier to survive for ganes with high chance
 - std::pair<Gene, Gene> cross(const Gene& partner) : perform one-point crossing
   point is chosen randomly and parents swap their genes around this point
-- Gene mutate(const Gene&) : perform either triple-operator mutation (>= 6 points) or one-point mutation:
+- Gene mutate(const Gene&) : perform either Wang greedy hybrid operator (>= 6 points) or one-point mutation:
   ramdomly choose 2 points of a gene and perform 3 operators: inverse, insert, swap and return best mutant or
   ramdomly choose 1 point of a gene and perform 3 operators: change, insert, remove and return best mutant
 */
@@ -35,7 +35,7 @@ class Gene {
     void swap(size_t, size_t);
     void cut_fill(size_t, size_t, const Gene&);
     Gene mutate_one_point(size_t);
-    Gene mutate_triple();
+    Gene mutate_hybrid();
 public:
     Gene(const Data*);
     size_t size() const;
