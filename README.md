@@ -1,4 +1,4 @@
-# Genetic algorithm for routing
+# Genetic algorithm for pathfinding
 by Denis Kozub
 
 * Non-convex polygonal obstacles on a plane
