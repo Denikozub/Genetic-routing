@@ -178,10 +178,11 @@ Structure of the algorithm:
 2) FOR epoch_number:  
 3)     selection  
 4)     remove duplicates  
-5)     fill population up to population_size  
+5)     fill population 
 6)     crossing  
 7)     mutation  
-8)     check if valueless_epoch_number reached  
+8)     IF valueless_epoch_number reached  
+9)         BREAK
 ~~~
 
 ### 5. Fitness function
