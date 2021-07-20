@@ -10,8 +10,8 @@ void Population::add_gene(const Gene& gene) {
 
 
 Population::Population(size_t set_size, const Data* set_data) :
-        data(set_data), max_size(set_size), range(set_data->get_range()) {
-    if (range == 0) {
+        data(set_data), max_size(set_size) {
+    if (data->get_range() == 0) {
         throw std::logic_error("Range cannot be zero");
     }
 }
@@ -29,7 +29,7 @@ void Population::fill() {
     }
     for (size_t i = 0; i < max_size - curr_size; ++i) {
         Gene gene(data);
-        gene.init(range);
+        gene.init();
         add_gene(gene);
     }
 }
@@ -97,7 +97,7 @@ void Population::mutate(double mutate_percent) {
         if (gene.size() == 0) {
             continue;
         }
-        add_gene(gene.mutate(range));
+        add_gene(gene.mutate());
     }
 }
 

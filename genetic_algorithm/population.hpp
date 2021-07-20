@@ -27,7 +27,7 @@ Population class:
 
 class Population {
     const Data* data;
-    size_t max_size, range;
+    size_t max_size;
     std::vector<Gene> population;
     void add_gene(const Gene&);
 public:

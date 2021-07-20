@@ -70,16 +70,17 @@ Gene Gene::mutate_hybrid() {
 }
 
 
-Gene Gene::mutate_one_point(size_t point_number) {
+Gene Gene::mutate_one_point() {
     if (len == 0) {
         throw std::invalid_argument("Gene cannot be empty");
     }
+    size_t range = data->get_range();
     Gene mutant1(*this), mutant2(*this), mutant3(*this);
     std::random_device r;
     size_t i = r() % len;
-    mutant1.gene[i] = r() % point_number;
+    mutant1.gene[i] = r() % range;
     mutant1.remove_duplicates();
-    mutant2.gene.insert(mutant2.gene.begin() + i, r() % point_number);
+    mutant2.gene.insert(mutant2.gene.begin() + i, r() % range);
     mutant2.remove_duplicates();
     mutant3.gene.erase(mutant3.gene.begin() + i);
     mutant3.len = mutant3.gene.size();
@@ -95,7 +96,8 @@ size_t Gene::size() const {
 }
 
 
-void Gene::init(size_t range) {
+void Gene::init() {
+    size_t range = data->get_range();
     std::random_device r;
     len = r() % range;
     gene = std::vector<size_t>(len);
@@ -159,8 +161,8 @@ std::pair<Gene, Gene> Gene::cross(const Gene& partner) {
 }
 
 
-Gene Gene::mutate(size_t point_number) {
-    return len < 6 ? mutate_one_point(point_number) : mutate_hybrid();
+Gene Gene::mutate() {
+    return len < 6 ? mutate_one_point() : mutate_hybrid();
 }
 
 
